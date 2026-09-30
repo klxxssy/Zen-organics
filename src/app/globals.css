@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #f5f1ea;
+  --color-bone: #faf8f4;
+  --color-sage: #7a8b6f;
+  --color-sage-deep: #5e6e55;
+  --color-charcoal: #2b2b2b;
+  --color-sand: #d9cfc1;
+
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-charcoal);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-sage-deep);
+  outline-offset: 3px;
+}
+
+/* Entrada suave al hacer scroll. Solo se oculta si JS está activo. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms var(--ease-soft),
+    transform 600ms var(--ease-soft);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Marcador visual para imágenes pendientes */
+.placeholder-img {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 14px, rgb(217 207 193 / 0.35) 14px 15px),
+    var(--color-bone);
+}
+
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+dialog::backdrop {
+  background: rgb(43 43 43 / 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
