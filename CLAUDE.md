@@ -2,7 +2,7 @@
 
 Landing de Zen Organics, marca chilena de tofu orgánico. **La web no vende directo**: su único objetivo es derivar a comprar en Líder y otros puntos de venta. Toda decisión de diseño y copy se evalúa por cuánto facilita ese click.
 
-Stack: Next.js (App Router) + Tailwind CSS + React Three Fiber.
+Stack: Next.js (App Router) + Tailwind CSS + framer-motion (solo en el hero). Componentes de UI reutilizables en `src/components/ui/`.
 
 ## Identidad de marca (obligatorio)
 
@@ -11,7 +11,7 @@ Stack: Next.js (App Router) + Tailwind CSS + React Three Fiber.
 - **Ritmo**: las secciones son **bloques de color con bordes redondeados** (radio 32–48px), separados del borde de la pantalla (12px en mobile, 24px en desktop) sobre el fondo `cream`. Alternan bloques claros (`bone`, `sage-tint`) y oscuros (`forest`). Mucho aire, máximo 1 idea por bloque.
 - **Personalidad (inspiración tofoo.co.uk, adaptada)**: títulos gruesos y redondeados, badges tipo sticker, bloques de color redondeados y tarjetas de receta con la comida sobre color sólido. **Nunca**: su tipografía, bloques inclinados, sus colores, textos o imágenes.
 - **Fotos**: grandes, protagonistas, luz natural y tonos cálidos de comida. Los placeholders de comida usan tonos cálidos (dorado/arena), nunca grises.
-- **Animación**: viva pero suave. Entradas escalonadas, fade + desplazamiento corto (400–700 ms, `ease-out`), hovers con elevación y zoom suave. Nada de rebotes ni parallax agresivo. Toda animación continua (gradiente, franja, 3D) **se pausa fuera de pantalla** y se detiene con `prefers-reduced-motion`.
+- **Animación**: viva pero suave. Entradas escalonadas, fade + desplazamiento corto (400–700 ms, `ease-out`), hovers con elevación y zoom suave. Nada de rebotes ni parallax agresivo. Toda animación continua (como la franja) **se pausa fuera de pantalla** y se detiene con `prefers-reduced-motion`.
 
 ### Paleta (tokens únicos, no usar otros colores)
 
@@ -21,14 +21,14 @@ Stack: Next.js (App Router) + Tailwind CSS + React Three Fiber.
 | `bone`           | `#FAF8F4` | Base: tarjetas y secciones claras alternas                           |
 | `forest`         | `#2F4030` | Secciones de contraste (beneficios, franja, CTA final)               |
 | `gold`           | `#C8843A` | Acento "tofu salteado": CTA de compra, badges, números, detalles, hovers |
-| `sage`           | `#7A8B6F` | Acentos decorativos e íconos, gradiente del hero                     |
+| `sage`           | `#7A8B6F` | Acentos decorativos e íconos                                         |
 | `sage-deep`      | `#5E6E55` | Links y texto de acento sobre fondos claros                          |
 | `charcoal`       | `#2B2B2B` | Textos y títulos sobre fondos claros; texto sobre `gold`             |
 | `sand`           | `#D9CFC1` | Bordes, divisores, detalles                                          |
 | `sage-tint`      | `color-mix(sage 25%, cream)` | Fondo de bloques claros alternos (texto `forest`, 7.6:1) |
 | `terracotta`     | `#B4603A` | Solo fondo de tarjetas de receta (tono de comida). Nunca con texto encima |
 
-En materiales 3D y placeholders de comida se permiten tonos naturales de alimento (verde edamame, tostados) derivados de esta paleta.
+En placeholders de comida se permiten tonos naturales de alimento (verde edamame, tostados) derivados de esta paleta.
 
 **Contraste (WCAG AA), verificado:**
 - `charcoal` sobre `gold`: 4.6:1. Es el texto obligatorio dentro de botones y badges dorados.
@@ -70,10 +70,11 @@ Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo
 
 ## Hero
 
-- Fondo con gradiente animado tipo mesh (crema, salvia y dorado suaves), movimiento lento (20 s o más) y grano sutil. Va en CSS y se mueve solo con `transform`.
-- **Desktop**: solo el tofu principal en 3D (sin elementos flotantes alrededor), con giro lento e inclinación suave según el mouse.
-- **Mobile**: el mismo gradiente CSS en versión liviana más la imagen del producto, sin WebGL.
-- El gradiente y el 3D se pausan cuando el hero sale de pantalla.
+- Componente **Prisma Hero** de 21st.dev (`src/components/ui/prisma-hero.tsx`), adaptado: foto de fondo a pantalla completa en un bloque redondeado, ruido y degradado `forest`, título gigante en Lilita One color `cream` abajo a la izquierda, y subtítulo con CTA a la derecha.
+- Animación original del componente (framer-motion): el título sube palabra por palabra y el subtítulo y el CTA entran escalonados. `MotionConfig reducedMotion="user"` respeta "reducir movimiento".
+- El CTA es el link de compra (`RetailerLink`, evento `click_lider`, `location: "hero"`) con el estilo del botón original: cápsula `gold` y círculo `forest` con flecha.
+- La foto de fondo actual es **TEMPORAL** (Unsplash) y está en `src/content/site.ts` → `hero.backgroundImage`. Se reemplaza por una foto propia en `/public/images` (y ahí se quita `unoptimized`).
+- El hero reserva la altura del header grande, así nunca queda tapado.
 
 ## Header
 
@@ -83,10 +84,6 @@ Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo
 - **Mobile**: el mismo comportamiento con menú hamburguesa; el menú desplegado también va en `forest`.
 - El hero reserva siempre la altura del header grande, así nunca tapa el título. Con reducir movimiento el cambio es instantáneo.
 - Hover de links: subrayado `gold` (el texto se mantiene en `cream`, porque `gold` sobre `forest` no da contraste para texto normal). El foco visible en el header va en `gold`.
-
-## Créditos
-
-- El modelo 3D del tofu tiene licencia CC BY 4.0: el crédito al autor va en el footer, en letra pequeña, y no se puede quitar.
 
 ## Vida en el resto de la página
 
@@ -101,8 +98,6 @@ Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo
 ## Performance y mobile
 
 - **Mobile first**: diseñar primero en 375px y luego ampliar a 768, 1024 y 1440.
-- En mobile (< 1024px o sin WebGL) **no se carga el 3D**: se muestra una imagen del producto.
-- El modelo `/public/models/tofu.glb` (cerrado por los 6 lados y comprimido con Meshopt mediante `npm run optimize:model`) se carga de forma diferida (`next/dynamic` con `ssr: false`), solo en desktop y después del primer render. Comprimirlo con Draco o Meshopt y usar un poster como fallback.
 - Imágenes siempre con `next/image`, en AVIF/WebP, con `sizes` correctos. Solo la imagen del hero lleva `priority`.
 - Objetivos: LCP < 2.5s en mobile 4G, CLS < 0.1 y JS inicial mínimo.
 
@@ -110,4 +105,4 @@ Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo
 
 - Foco visible en todos los elementos interactivos. Usar HTML semántico (`header`, `main`, `section`, `footer`).
 - El acordeón de FAQ va con `<details>/<summary>` o con ARIA correcto.
-- Todas las imágenes llevan `alt` descriptivo en español. El canvas 3D lleva `aria-hidden` y texto alternativo.
+- Todas las imágenes llevan `alt` descriptivo en español. 

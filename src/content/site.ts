@@ -42,6 +42,13 @@ export const hero = {
     "Tofu orgánico elaborado en Chile, listo para tu cocina de todos los días. Encuéntralo en tu supermercado.",
   cta: "Cómpralo en Líder",
   secondary: "Ver productos",
+  // TEMPORAL: foto de ejemplo de Unsplash (licencia Unsplash, uso gratuito).
+  // "Bowl of vegetables with tofu" de sina piryae: https://unsplash.com/photos/NDX6Hr95dtQ
+  // Reemplazar por foto propia (ej. "/images/hero.jpg") antes de publicar.
+  backgroundImage: {
+    src: "https://unsplash.com/photos/NDX6Hr95dtQ/download?force=true&w=2400",
+    alt: "Bowl de verduras con tofu",
+  },
 };
 
 export const benefits = [
@@ -226,14 +233,4 @@ export const learn = {
       image: null as string | null,
     },
   ],
-};
-
-/** Crédito obligatorio del modelo 3D (licencia CC BY 4.0, datos del propio archivo .glb). */
-export const modelCredit = {
-  title: "Tofu",
-  author: "tqezzz",
-  authorUrl: "https://sketchfab.com/tqezzz",
-  sourceUrl: "https://sketchfab.com/3d-models/tofu-b5313d4d66c4489a9b127be72a1c22e5",
-  license: "CC BY 4.0",
-  licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
 };

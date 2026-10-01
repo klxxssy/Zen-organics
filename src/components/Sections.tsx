@@ -20,7 +20,6 @@ import {
   finalCta,
   learn,
   lider,
-  modelCredit,
   products,
   recipes,
 } from "@/content/site";
@@ -475,21 +474,6 @@ export function Footer() {
       </div>
       <div className={`${container} mt-12 border-t border-bone/15 pt-6 text-sm text-bone/60`}>
         © {new Date().getFullYear()} Zen Organics. Todos los derechos reservados.
-        <p className="mt-2 text-xs text-bone/60">
-          Modelo 3D &ldquo;
-          <a href={modelCredit.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-bone">
-            {modelCredit.title}
-          </a>
-          &rdquo; de{" "}
-          <a href={modelCredit.authorUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-bone">
-            {modelCredit.author}
-          </a>
-          , bajo licencia{" "}
-          <a href={modelCredit.licenseUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-bone">
-            {modelCredit.license}
-          </a>
-          . Modificado: base cerrada y optimizado para web.
-        </p>
       </div>
     </footer>
   );
