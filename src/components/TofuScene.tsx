@@ -6,7 +6,7 @@ import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode } from 
 import * as THREE from "three";
 
 const MODEL_URL = "/models/tofu.glb";
-const TARGET_SIZE = 2.5; // tamaño máximo del modelo en unidades de escena
+const TARGET_SIZE = 2.7; // tamaño máximo del modelo en unidades de escena
 
 type SceneProps = { active: boolean; reducedMotion: boolean; onReady: () => void };
 
@@ -27,6 +27,11 @@ function GltfTofu({ onReady }: { onReady: () => void }) {
   // Centra y escala cualquier modelo al mismo tamaño visual
   const model = useMemo(() => {
     const root = scene.clone(true);
+    // El modelo no trae textura: se le da el color y acabado del tofu
+    const material = new THREE.MeshStandardMaterial({ color: TOFU_RAW, roughness: 0.78, metalness: 0 });
+    root.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) (o as THREE.Mesh).material = material;
+    });
     const box = new THREE.Box3().setFromObject(root);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
@@ -117,7 +122,7 @@ export default function TofuScene({ active, reducedMotion, onReady }: SceneProps
             <GltfTofu onReady={onReady} />
           </ModelBoundary>
         </Rig>
-        <ContactShadows position={[0, -1.2, 0]} opacity={0.2} scale={3.4} blur={2.8} far={2.2} color="#2F4030" />
+        <ContactShadows position={[0, -1.05, 0]} opacity={0.28} scale={4} blur={2.6} far={2} color="#2F4030" />
         {/* Iluminación de estudio local: sin descargar HDRs externos */}
         <Environment resolution={128} environmentIntensity={0.6}>
           <Lightformer form="rect" intensity={2} position={[0, 4, 2]} scale={[6, 3, 1]} />

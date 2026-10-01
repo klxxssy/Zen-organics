@@ -6,10 +6,10 @@ Stack: Next.js (App Router) + Tailwind CSS + React Three Fiber.
 
 ## Identidad de marca (obligatorio)
 
-- **Estilo**: marca de comida premium y moderna, con vida y color, sin perder la seriedad. Debe despertar apetito. Nada infantil ni caricaturesco: sin emojis, sin ilustraciones cartoon, sin tipografías display juguetonas.
+- **Estilo**: marca de comida premium y moderna, con vida, color y títulos con personalidad, sin perder la seriedad. Debe despertar apetito. Nada caricaturesco: sin emojis ni ilustraciones cartoon.
 - **Tono**: cercano pero profesional. Tuteo, frases claras, sin chistes ni juegos de palabras.
 - **Ritmo**: las secciones son **bloques de color con bordes redondeados** (radio 32–48px), separados del borde de la pantalla (12px en mobile, 24px en desktop) sobre el fondo `cream`. Alternan bloques claros (`bone`, `sage-tint`) y oscuros (`forest`). Mucho aire, máximo 1 idea por bloque.
-- **Personalidad (inspiración tofoo.co.uk, adaptada)**: badges tipo sticker, bloques de color redondeados y tarjetas de receta con la comida sobre color sólido. **Nunca**: tipografía tipo cómic, bloques inclinados, sus colores, textos o imágenes. Zen Organics sigue siendo más sobrio y premium.
+- **Personalidad (inspiración tofoo.co.uk, adaptada)**: títulos gruesos y redondeados, badges tipo sticker, bloques de color redondeados y tarjetas de receta con la comida sobre color sólido. **Nunca**: su tipografía, bloques inclinados, sus colores, textos o imágenes.
 - **Fotos**: grandes, protagonistas, luz natural y tonos cálidos de comida. Los placeholders de comida usan tonos cálidos (dorado/arena), nunca grises.
 - **Animación**: viva pero suave. Entradas escalonadas, fade + desplazamiento corto (400–700 ms, `ease-out`), hovers con elevación y zoom suave. Nada de rebotes ni parallax agresivo. Toda animación continua (gradiente, franja, 3D) **se pausa fuera de pantalla** y se detiene con `prefers-reduced-motion`.
 
@@ -41,10 +41,12 @@ En materiales 3D y placeholders de comida se permiten tonos naturales de aliment
 
 ### Tipografía
 
-- Títulos: **Fraunces** (serif), pesos 400–600. Nunca en mayúsculas completas.
-- Textos, botones y UI: **Inter**, pesos 400–600.
+- Títulos: **Lilita One** (Google Fonts): gruesa, redondeada y con personalidad. Tiene un solo peso (400); no usar negrita sintética. Tracking normal, nunca en mayúsculas completas. Soporta acentos, ñ y ¿¡.
+- Textos, botones y UI: **DM Sans**, pesos 400–700.
 - Cargar ambas con `next/font/google` (self-hosted, `display: swap`). Nada de `@import` de Google Fonts.
+- Clases: `font-display` para títulos y `font-sans` para el resto.
 - Cuerpo mínimo 16px, interlineado 1.6, líneas de 60–75 caracteres.
+- Los títulos grandes (h1/h2) entran palabra por palabra al hacer scroll (fade + subida corta, ~70 ms entre palabras). El h1 del hero se anima solo con CSS, sin esperar JS, para no afectar el LCP. Con reducir movimiento se muestran completos y quietos.
 
 ## Reglas de contenido
 
@@ -75,7 +77,16 @@ Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo
 
 ## Header
 
-- Fijo, pero **nunca tapa contenido al leer**: se oculta al hacer scroll hacia abajo y reaparece al subir, con el menú abierto o con foco de teclado. El hero reserva siempre la altura del header.
+- Fondo `forest`; logo y links en `cream`; botón "Comprar en Líder" en `gold` (como en todo el sitio).
+- **Arriba de todo** (sin scroll): ocupa todo el ancho, es alto (≈112px en desktop y 80px en mobile), con el logo grande, los links en letra grande y mucho espacio entre ellos.
+- **Al hacer scroll**: se achica con una transición suave (menos alto y logo más chico) y se convierte en una barra flotante con bordes redondeados, separada de los bordes de la pantalla y con sombra. Al volver arriba recupera su tamaño grande.
+- **Mobile**: el mismo comportamiento con menú hamburguesa; el menú desplegado también va en `forest`.
+- El hero reserva siempre la altura del header grande, así nunca tapa el título. Con reducir movimiento el cambio es instantáneo.
+- Hover de links: subrayado `gold` (el texto se mantiene en `cream`, porque `gold` sobre `forest` no da contraste para texto normal). El foco visible en el header va en `gold`.
+
+## Créditos
+
+- El modelo 3D del tofu tiene licencia CC BY 4.0: el crédito al autor va en el footer, en letra pequeña, y no se puede quitar.
 
 ## Vida en el resto de la página
 
@@ -91,7 +102,7 @@ Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo
 
 - **Mobile first**: diseñar primero en 375px y luego ampliar a 768, 1024 y 1440.
 - En mobile (< 1024px o sin WebGL) **no se carga el 3D**: se muestra una imagen del producto.
-- El modelo `/public/models/tofu.glb` se carga de forma diferida (`next/dynamic` con `ssr: false`), solo en desktop y después del primer render. Comprimirlo con Draco o Meshopt y usar un poster como fallback.
+- El modelo `/public/models/tofu.glb` (cerrado por los 6 lados y comprimido con Meshopt mediante `npm run optimize:model`) se carga de forma diferida (`next/dynamic` con `ssr: false`), solo en desktop y después del primer render. Comprimirlo con Draco o Meshopt y usar un poster como fallback.
 - Imágenes siempre con `next/image`, en AVIF/WebP, con `sizes` correctos. Solo la imagen del hero lleva `priority`.
 - Objetivos: LCP < 2.5s en mobile 4G, CLS < 0.1 y JS inicial mínimo.
 

@@ -20,6 +20,7 @@ import {
   finalCta,
   learn,
   lider,
+  modelCredit,
   products,
   recipes,
 } from "@/content/site";
@@ -27,6 +28,7 @@ import { ImageSlot } from "./ImageSlot";
 import { OtherRetailersButton } from "./OtherRetailersButton";
 import { RetailerLink } from "./RetailerLink";
 import { Reveal } from "./Reveal";
+import { Words } from "./Words";
 
 const container = "mx-auto max-w-7xl px-5 md:px-10";
 const blockY = "py-16 md:py-24 lg:py-28";
@@ -80,11 +82,11 @@ function SectionHeading({
         <span aria-hidden className="h-px w-6 bg-gold" />
       </p>
       <h2
-        className={`font-serif text-4xl font-medium leading-tight tracking-tight text-balance md:text-6xl ${
+        className={`font-display text-4xl leading-[1.05] text-balance md:text-6xl ${
           dark ? "text-bone" : "text-forest"
         }`}
       >
-        {title}
+        <Words text={title} />
       </h2>
       {text && (
         <p className={`mt-5 text-lg leading-relaxed ${dark ? "text-bone/80" : "text-charcoal/75"}`}>{text}</p>
@@ -152,12 +154,12 @@ export function Learn() {
                     className="rounded-[1.25rem]"
                     innerClassName="transition-transform duration-700 ease-[var(--ease-soft)] group-hover:scale-105"
                   />
-                  <span className="absolute -top-2 left-4 -rotate-2 rounded-xl bg-forest px-4 py-2 font-serif text-lg text-bone shadow-md">
+                  <span className="absolute -top-2 left-4 -rotate-2 rounded-xl bg-forest px-4 py-2 font-display text-lg text-bone shadow-md">
                     {c.tag}
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col px-4 pb-4 pt-6">
-                  <h3 className="font-serif text-2xl text-forest">{c.title}</h3>
+                  <h3 className="font-display text-2xl text-forest">{c.title}</h3>
                   <p className="mt-2 leading-relaxed text-charcoal/80">{c.text}</p>
                   <details className="group/steps mt-5">
                     <summary className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-forest px-5 text-[15px] font-semibold text-forest transition-colors hover:bg-forest hover:text-bone">
@@ -212,11 +214,11 @@ export function Benefits() {
                   <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-gold text-charcoal">
                     <Icon aria-hidden className="size-6" strokeWidth={1.75} />
                   </span>
-                  <span aria-hidden className="font-serif text-4xl text-gold">
+                  <span aria-hidden className="font-display text-4xl text-gold">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <h3 className="font-serif text-2xl text-bone">{b.title}</h3>
+                <h3 className="font-display text-2xl text-bone">{b.title}</h3>
                 <p className="mt-3 leading-relaxed text-bone/80">{b.text}</p>
               </Reveal>
             );
@@ -254,7 +256,7 @@ export function Products() {
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col p-6 md:p-8">
-                <h3 className="font-serif text-2xl text-forest">{p.name}</h3>
+                <h3 className="font-display text-2xl text-forest">{p.name}</h3>
                 <p className="mt-3 flex-1 leading-relaxed text-charcoal/75">{p.description}</p>
                 <div className="mt-6 flex flex-col gap-3">
                   <RetailerLink retailer={lider} location="producto" product={p.id}>
@@ -302,7 +304,7 @@ export function Recipes() {
                   </span>
                 </div>
                 <div className="p-6 md:p-7">
-                  <h3 className="font-serif text-2xl text-forest">{r.title}</h3>
+                  <h3 className="font-display text-2xl text-forest">{r.title}</h3>
                   <ol className="mt-4 space-y-2 text-charcoal/80">
                     {r.steps.map((step, n) => (
                       <li key={n} className="flex gap-3 leading-relaxed">
@@ -322,7 +324,7 @@ export function Recipes() {
           ))}
         </ul>
         <Reveal className="mt-14 flex flex-col items-center gap-4 text-center">
-          <p className="font-serif text-3xl text-forest">¿Te dieron ganas?</p>
+          <p className="font-display text-3xl text-forest">¿Te dieron ganas?</p>
           <RetailerLink retailer={lider} location="recetas" size="lg">
             Encuéntralo en Líder
           </RetailerLink>
@@ -350,7 +352,7 @@ export function Faq() {
         <Reveal className="border-t border-forest/20">
           {faqs.map((f) => (
             <details key={f.q} className="group border-b border-forest/20">
-              <summary className="flex min-h-16 cursor-pointer items-center justify-between gap-6 py-6 font-serif text-xl text-forest transition-opacity hover:opacity-80 md:text-2xl">
+              <summary className="flex min-h-16 cursor-pointer items-center justify-between gap-6 py-6 font-display text-xl text-forest transition-opacity hover:opacity-80 md:text-2xl">
                 {f.q}
                 <span
                   aria-hidden
@@ -404,7 +406,7 @@ export function WhereToBuy() {
                     <img src={r.logo} alt={r.name} className="max-h-10 w-auto" loading="lazy" />
                   ) : (
                     <>
-                      <span className="font-serif text-lg leading-tight text-forest">{r.name}</span>
+                      <span className="font-display text-lg leading-tight text-forest">{r.name}</span>
                       <span className="text-[11px] text-charcoal/60">[PLACEHOLDER] logo</span>
                     </>
                   )}
@@ -426,7 +428,9 @@ export function FinalCta() {
         className="absolute left-1/2 top-1/2 -z-10 size-[80vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--color-gold)_30%,transparent),transparent_60%)]"
       />
       <Reveal className="mx-auto flex max-w-2xl flex-col items-center px-5 text-center">
-        <h2 className="font-serif text-5xl font-medium leading-tight tracking-tight md:text-7xl">{finalCta.title}</h2>
+        <h2 className="font-display text-5xl leading-tight md:text-7xl">
+          <Words text={finalCta.title} />
+        </h2>
         <p className="mt-5 text-lg text-bone/80">{finalCta.text}</p>
         <RetailerLink retailer={lider} location="cta_final" size="lg" className="mt-10 md:min-h-16 md:px-10 md:text-lg">
           {finalCta.cta}
@@ -441,7 +445,7 @@ export function Footer() {
     <footer className="mt-3 bg-charcoal pb-28 pt-16 text-bone md:mt-6 lg:pb-12">
       <div className={`${container} grid gap-10 md:grid-cols-3`}>
         <div>
-          <p className="font-serif text-2xl">Zen Organics</p>
+          <p className="font-display text-2xl">Zen Organics</p>
           <p className="mt-3 max-w-xs text-bone/70">Tofu orgánico hecho en Chile.</p>
         </div>
         <div>
@@ -471,6 +475,21 @@ export function Footer() {
       </div>
       <div className={`${container} mt-12 border-t border-bone/15 pt-6 text-sm text-bone/60`}>
         © {new Date().getFullYear()} Zen Organics. Todos los derechos reservados.
+        <p className="mt-2 text-xs text-bone/60">
+          Modelo 3D &ldquo;
+          <a href={modelCredit.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-bone">
+            {modelCredit.title}
+          </a>
+          &rdquo; de{" "}
+          <a href={modelCredit.authorUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-bone">
+            {modelCredit.author}
+          </a>
+          , bajo licencia{" "}
+          <a href={modelCredit.licenseUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-bone">
+            {modelCredit.license}
+          </a>
+          . Modificado: base cerrada y optimizado para web.
+        </p>
       </div>
     </footer>
   );

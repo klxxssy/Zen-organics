@@ -12,8 +12,8 @@
   --color-sage-tint: color-mix(in oklab, #7a8b6f 25%, #f5f1ea);
   --color-sand: #d9cfc1;
 
-  --font-serif: var(--font-fraunces), Georgia, serif;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-lilita), "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
 
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -30,9 +30,46 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Lilita One tiene un solo peso: sin negrita ni cursiva sintética */
+.font-display {
+  font-synthesis: none;
+  letter-spacing: 0.005em;
+}
+
+/* Títulos palabra por palabra.
+   Secciones: se activan con .reveal.is-visible (IntersectionObserver).
+   Hero (.words--auto): solo CSS, arranca al pintar sin esperar JS. */
+.words .w {
+  display: inline-block;
+}
+.js .reveal .words .w {
+  opacity: 0;
+  transform: translateY(0.45em);
+}
+.js .reveal.is-visible .words .w,
+.words--auto .w {
+  animation: word-in 650ms var(--ease-soft) both;
+  animation-delay: calc(var(--i) * 70ms + 120ms);
+}
+@keyframes word-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 :focus-visible {
   outline: 2px solid var(--color-sage-deep);
   outline-offset: 3px;
+}
+/* Sobre fondos verde bosque el foco va en dorado (3.6:1, suficiente para no-texto) */
+.header-forest :focus-visible,
+.bg-forest :focus-visible {
+  outline-color: var(--color-gold);
 }
 
 /* Entrada suave al hacer scroll. Solo se oculta si JS está activo. */
@@ -145,8 +182,13 @@ dialog::backdrop {
     transition: none;
   }
   .mesh-blob,
-  .marquee-track {
+  .marquee-track,
+  .words .w {
     animation: none !important;
+  }
+  .js .reveal .words .w {
+    opacity: 1;
+    transform: none;
   }
   *,
   *::before,

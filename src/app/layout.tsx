@@ -1,18 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { DM_Sans, Lilita_One } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-fraunces",
+// Títulos: gruesa y redondeada (incluye latin-ext para acentos y ñ)
+const lilita = Lilita_One({
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
+  variable: "--font-lilita",
   display: "swap",
 });
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
+const dmSans = DM_Sans({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
@@ -37,7 +38,7 @@ const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es-CL" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="es-CL" className={`${lilita.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
         <script
           // Activa animaciones solo con JS y prepara dataLayer antes de cualquier click

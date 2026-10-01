@@ -24,7 +24,7 @@ export function Marquee() {
       {Array.from({ length: 3 }).flatMap((_, r) =>
         marquee.map((word, i) => (
           <li key={`${r}-${i}`} className="flex items-center">
-            <span className="px-6 font-serif text-2xl text-bone md:px-10 md:text-4xl">{word}</span>
+            <span className="px-6 font-display text-2xl text-bone md:px-10 md:text-4xl">{word}</span>
             <span aria-hidden className="size-2 rotate-45 bg-gold md:size-2.5" />
           </li>
         )),

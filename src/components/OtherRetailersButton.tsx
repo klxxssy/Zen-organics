@@ -28,7 +28,7 @@ export function OtherRetailersButton({ product, productName }: { product: string
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm text-sage-deep">Puntos de venta</p>
-              <h3 id={`dlg-${product}`} className="mt-1 font-serif text-2xl">
+              <h3 id={`dlg-${product}`} className="mt-1 font-display text-2xl">
                 {productName}
               </h3>
             </div>

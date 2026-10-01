@@ -4,20 +4,21 @@ import { HeroVisual } from "./HeroVisual";
 import { ImageSlot } from "./ImageSlot";
 import { MeshBackground } from "./MeshBackground";
 import { RetailerLink } from "./RetailerLink";
+import { Words } from "./Words";
 
 export function Hero() {
   return (
-    <section id="inicio" className="relative isolate overflow-hidden pt-16 md:pt-20" data-hero>
-      {/* pt-16/md:pt-20 = altura exacta del header fijo: el título nunca queda debajo */}
+    <section id="inicio" className="relative isolate overflow-hidden pt-20 lg:pt-28" data-hero>
+      {/* pt-20/lg:pt-28 = altura del header en su estado grande: el título nunca queda debajo */}
       <MeshBackground className="-z-10" />
-      <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-10 md:px-8 lg:min-h-[calc(100svh-5rem)] lg:grid-cols-[1.05fr_1fr] lg:gap-6 lg:pb-20 lg:pt-12">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-16 pt-10 md:px-8 lg:min-h-[calc(100svh-7rem)] lg:grid-cols-[1.05fr_1fr] lg:gap-6 lg:pb-20 lg:pt-12">
         <div className="max-w-xl">
           <p className="mb-6 inline-flex items-center gap-2 rounded-full bg-bone/80 px-4 py-1.5 text-sm font-medium text-forest backdrop-blur-sm">
             <span aria-hidden className="size-1.5 rounded-full bg-gold" />
             {hero.kicker}
           </p>
-          <h1 className="font-serif text-[2.75rem] font-medium leading-[1.02] tracking-tight text-forest text-balance sm:text-6xl lg:text-[5.25rem]">
-            {hero.title}
+          <h1 className="font-display text-[2.9rem] leading-[1.02] text-forest text-balance sm:text-6xl lg:text-[5rem]">
+            <Words text={hero.title} auto />
           </h1>
           <p className="mt-6 max-w-md text-lg leading-relaxed text-charcoal/80">{hero.subtitle}</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6">

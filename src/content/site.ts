@@ -227,3 +227,13 @@ export const learn = {
     },
   ],
 };
+
+/** Crédito obligatorio del modelo 3D (licencia CC BY 4.0, datos del propio archivo .glb). */
+export const modelCredit = {
+  title: "Tofu",
+  author: "tqezzz",
+  authorUrl: "https://sketchfab.com/tqezzz",
+  sourceUrl: "https://sketchfab.com/3d-models/tofu-b5313d4d66c4489a9b127be72a1c22e5",
+  license: "CC BY 4.0",
+  licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+};

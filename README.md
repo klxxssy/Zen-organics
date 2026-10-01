@@ -23,7 +23,7 @@ Después abre http://localhost:3000.
 | Textos, productos, recetas, FAQ, links y redes | `src/content/site.ts` |
 | Fotos | `public/images/`; en `site.ts` cambias `image: null` por `"/images/archivo.jpg"` |
 | Logos de puntos de venta (solo con permiso) | `public/images/`; en `site.ts` cambias `logo: null` por la ruta |
-| Modelo 3D | `public/models/tofu.glb`; luego ejecuta `npm run optimize:model` para comprimirlo |
+| Modelo 3D | `public/models/tofu.glb` (cerrado con `scripts/close_tofu.py`); luego ejecuta `npm run optimize:model` para comprimirlo. Crédito CC BY 4.0 en el footer |
 | Colores y tipografías | `src/app/globals.css` (bloque `@theme`) |
 
 Busca `[PLACEHOLDER]` para ver todo lo que falta confirmar.
