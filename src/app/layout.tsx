@@ -3,37 +3,18 @@ import { DM_Sans, Lilita_One } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-// Títulos: gruesa y redondeada (incluye latin-ext para acentos y ñ)
-const lilita = Lilita_One({
-  subsets: ["latin", "latin-ext"],
-  weight: "400",
-  variable: "--font-lilita",
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-dm-sans",
-  display: "swap",
-});
+const lilita = Lilita_One({ subsets: ["latin", "latin-ext"], weight: "400", variable: "--font-lilita", display: "swap" });
+const dmSans = DM_Sans({ subsets: ["latin", "latin-ext"], variable: "--font-dm-sans", display: "swap" });
 
 export const metadata: Metadata = {
   title: "Zen Organics · Tofu orgánico hecho en Chile",
-  description:
-    "Tofu orgánico elaborado en Chile. Proteína vegetal simple y versátil. Encuéntralo en Líder y otros puntos de venta.",
-  openGraph: {
-    title: "Zen Organics · Tofu orgánico hecho en Chile",
-    description: "Proteína vegetal, simple y honesta. Encuéntralo en Líder.",
-    locale: "es_CL",
-    type: "website",
-  },
+  description: "Tofu orgánico hecho en Chile. Encuéntralo en Líder y otros puntos de venta.",
+  openGraph: { title: "Zen Organics", description: "Tofu orgánico hecho en Chile.", locale: "es_CL", type: "website" },
 };
 
-export const viewport: Viewport = {
-  themeColor: "#F5F1EA",
-};
+export const viewport: Viewport = { themeColor: "#C8843A" };
 
-// [PLACEHOLDER] ID de Google Tag Manager en la variable NEXT_PUBLIC_GTM_ID
+// [PLACEHOLDER] ID de Google Tag Manager en NEXT_PUBLIC_GTM_ID
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -41,7 +22,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es-CL" className={`${lilita.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <head>
         <script
-          // Activa animaciones solo con JS y prepara dataLayer antes de cualquier click
           dangerouslySetInnerHTML={{
             __html: "document.documentElement.classList.add('js');window.dataLayer=window.dataLayer||[];",
           }}

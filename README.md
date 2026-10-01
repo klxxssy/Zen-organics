@@ -20,10 +20,10 @@ Después abre http://localhost:3000.
 
 | Qué | Dónde |
 |---|---|
-| Textos, productos, recetas, FAQ, links y redes | `src/content/site.ts` |
+| Textos, productos, recetas, FAQ, links y redes | `src/content/zen.ts` |
 | Fotos | `public/images/`; en `site.ts` cambias `image: null` por `"/images/archivo.jpg"` |
 | Logos de puntos de venta (solo con permiso) | `public/images/`; en `site.ts` cambias `logo: null` por la ruta |
-| Slides del hero | `src/content/site.ts` → `heroSlides` |
+| Slides del hero | `src/content/zen.ts` → `slides` |
 | Colores y tipografías | `src/app/globals.css` (bloque `@theme`) |
 
 Busca `[PLACEHOLDER]` para ver todo lo que falta confirmar.
