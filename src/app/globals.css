@@ -8,6 +8,8 @@
   --color-charcoal: #2b2b2b;
   --color-forest: #2f4030;
   --color-gold: #c8843a;
+  --color-terracotta: #b4603a;
+  --color-sage-tint: color-mix(in oklab, #7a8b6f 25%, #f5f1ea);
   --color-sand: #d9cfc1;
 
   --font-serif: var(--font-fraunces), Georgia, serif;

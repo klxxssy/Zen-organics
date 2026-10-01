@@ -57,7 +57,7 @@ export function HeroVisual() {
       {load && (
         <div
           aria-hidden
-          className={`absolute -inset-[6%] transition-opacity duration-1000 ${ready ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 transition-opacity duration-1000 ${ready ? "opacity-100" : "opacity-0"}`}
         >
           <TofuScene active={inView} reducedMotion={reducedMotion} onReady={() => setReady(true)} />
         </div>

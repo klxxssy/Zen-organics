@@ -1,10 +1,24 @@
-import { Clock, Leaf, MapPin, Plus, Sprout, UtensilsCrossed } from "lucide-react";
+import {
+  ChevronDown,
+  Clock,
+  Dumbbell,
+  Heart,
+  Leaf,
+  MapPin,
+  Plus,
+  Sparkles,
+  Sprout,
+  UtensilsCrossed,
+} from "lucide-react";
+import type { ReactNode } from "react";
 import {
   allRetailers,
+  badges,
   benefits,
   contact,
   faqs,
   finalCta,
+  learn,
   lider,
   products,
   recipes,
@@ -14,8 +28,33 @@ import { OtherRetailersButton } from "./OtherRetailersButton";
 import { RetailerLink } from "./RetailerLink";
 import { Reveal } from "./Reveal";
 
-const container = "mx-auto max-w-7xl px-5 md:px-8";
-const sectionY = "py-20 md:py-28 lg:py-32";
+const container = "mx-auto max-w-7xl px-5 md:px-10";
+const blockY = "py-16 md:py-24 lg:py-28";
+
+type Tone = "forest" | "bone" | "tint";
+const toneBg: Record<Tone, string> = { forest: "bg-forest text-bone", bone: "bg-bone", tint: "bg-sage-tint" };
+
+/** Sección como bloque de color redondeado, separado del borde de la pantalla. */
+function Block({
+  id,
+  tone,
+  children,
+  className = "",
+  ...rest
+}: {
+  id: string;
+  tone: Tone;
+  children: ReactNode;
+  className?: string;
+} & Record<`data-${string}`, boolean | string>) {
+  return (
+    <section id={id} className="px-3 py-1.5 md:px-6 md:py-3" {...rest}>
+      <div className={`relative isolate overflow-hidden rounded-[2rem] md:rounded-[3rem] ${toneBg[tone]} ${className}`}>
+        {children}
+      </div>
+    </section>
+  );
+}
 
 function SectionHeading({
   eyebrow,
@@ -26,13 +65,14 @@ function SectionHeading({
   eyebrow: string;
   title: string;
   text?: string;
+  /** Texto claro para bloques forest */
   dark?: boolean;
 }) {
   return (
     <Reveal className="mx-auto mb-12 max-w-2xl text-center md:mb-16">
       <p
         className={`mb-5 inline-flex items-center gap-2 text-sm font-medium tracking-wide ${
-          dark ? "text-bone/85" : "text-sage-deep"
+          dark ? "text-bone/85" : "text-forest"
         }`}
       >
         <span aria-hidden className="h-px w-6 bg-gold" />
@@ -55,9 +95,102 @@ function SectionHeading({
 
 const benefitIcons = { leaf: Leaf, sprout: Sprout, utensils: UtensilsCrossed, mapPin: MapPin };
 
+const badgeIcons = { dumbbell: Dumbbell, sprout: Sprout, mapPin: MapPin, leaf: Leaf, heart: Heart, sparkles: Sparkles };
+const badgeTone = {
+  gold: { box: "bg-gold text-charcoal", icon: "bg-charcoal/10" },
+  forest: { box: "bg-forest text-bone", icon: "bg-bone/15" },
+  sage: { box: "bg-sage-tint text-forest ring-2 ring-sage", icon: "bg-sage text-bone" },
+  bone: { box: "bg-bone text-forest ring-1 ring-sand", icon: "bg-sage-tint" },
+};
+// Rotación sutil tipo sticker (no bloques inclinados)
+const tilts = ["-rotate-2", "rotate-[1.5deg]", "-rotate-1", "rotate-2", "-rotate-[1.5deg]", "rotate-1"];
+
+/** Fila de badges tipo sticker. Textos [PLACEHOLDER] hasta confirmarlos. */
+export function StickerBadges() {
+  return (
+    <section aria-label="Atributos del producto" className="px-5 py-10 md:py-14">
+      <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-3 gap-y-4 md:gap-x-5">
+        {badges.map((b, i) => {
+          const Icon = badgeIcons[b.icon];
+          const t = badgeTone[b.tone];
+          return (
+            <Reveal as="li" key={b.label} delay={i * 60}>
+              <span
+                className={`inline-flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 text-sm font-semibold md:gap-2.5 md:py-2 md:pl-2 md:pr-5 shadow-[0_8px_18px_-10px_rgb(47_64_48/0.55)] transition-transform duration-300 hover:rotate-0 hover:scale-105 md:text-base ${t.box} ${tilts[i % tilts.length]}`}
+              >
+                <span className={`inline-flex size-8 items-center justify-center rounded-full ${t.icon}`}>
+                  <Icon aria-hidden className="size-4" strokeWidth={2} />
+                </span>
+                {b.label}
+              </span>
+            </Reveal>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+/** "Aprende a prepararlo": 3 guías con pasos desplegables. */
+export function Learn() {
+  return (
+    <Block id="aprende" tone="tint" className={blockY}>
+      <div className={container}>
+        <SectionHeading eyebrow={learn.eyebrow} title={learn.title} text={learn.text} />
+        <ul className="grid gap-6 md:grid-cols-3">
+          {learn.cards.map((c, i) => (
+            <Reveal as="li" key={c.id} delay={i * 90} className="flex">
+              <article className="group flex w-full flex-col rounded-3xl bg-bone p-3 shadow-[0_20px_40px_-30px_rgb(47_64_48/0.6)] transition-[translate] duration-500 ease-[var(--ease-soft)] hover:-translate-y-1.5">
+                <div className="relative">
+                  <ImageSlot
+                    src={c.image}
+                    alt={c.title}
+                    ratio="4/3"
+                    label="Foto guía"
+                    tone="warm"
+                    sizes="(min-width: 768px) 30vw, 100vw"
+                    className="rounded-[1.25rem]"
+                    innerClassName="transition-transform duration-700 ease-[var(--ease-soft)] group-hover:scale-105"
+                  />
+                  <span className="absolute -top-2 left-4 -rotate-2 rounded-xl bg-forest px-4 py-2 font-serif text-lg text-bone shadow-md">
+                    {c.tag}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col px-4 pb-4 pt-6">
+                  <h3 className="font-serif text-2xl text-forest">{c.title}</h3>
+                  <p className="mt-2 leading-relaxed text-charcoal/80">{c.text}</p>
+                  <details className="group/steps mt-5">
+                    <summary className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-forest px-5 text-[15px] font-semibold text-forest transition-colors hover:bg-forest hover:text-bone">
+                      Ver pasos
+                      <ChevronDown aria-hidden className="size-4 transition-transform duration-300 group-open/steps:rotate-180" />
+                    </summary>
+                    <ol className="mt-4 space-y-2 text-charcoal/80">
+                      {c.steps.map((step, n) => (
+                        <li key={n} className="flex gap-3 leading-relaxed">
+                          <span
+                            aria-hidden
+                            className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-gold text-xs font-semibold text-charcoal"
+                          >
+                            {n + 1}
+                          </span>
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </details>
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </Block>
+  );
+}
+
 export function Benefits() {
   return (
-    <section id="beneficios" className={`relative isolate overflow-hidden bg-forest ${sectionY}`}>
+    <Block id="beneficios" tone="forest" className={blockY}>
       {/* Brillo cálido sutil para dar profundidad al verde */}
       <div
         aria-hidden
@@ -90,13 +223,13 @@ export function Benefits() {
           })}
         </ul>
       </div>
-    </section>
+    </Block>
   );
 }
 
 export function Products() {
   return (
-    <section id="productos" className={sectionY}>
+    <Block id="productos" tone="bone" className={blockY}>
       <div className={container}>
         <SectionHeading
           eyebrow="Nuestros productos"
@@ -106,7 +239,7 @@ export function Products() {
         <ul className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {products.map((p, i) => (
             <Reveal as="li" key={p.id} delay={i * 90} className="flex">
-              <article className="group flex w-full flex-col overflow-hidden rounded-3xl bg-bone shadow-[0_1px_0_var(--color-sand)] ring-1 ring-sand transition-[translate,box-shadow] duration-500 ease-[var(--ease-soft)] hover:-translate-y-2 hover:shadow-[0_30px_60px_-28px_rgb(47_64_48/0.45)]">
+              <article className="group flex w-full flex-col overflow-hidden rounded-3xl bg-cream ring-1 ring-sand transition-[translate,box-shadow] duration-500 ease-[var(--ease-soft)] hover:-translate-y-2 hover:shadow-[0_30px_60px_-28px_rgb(47_64_48/0.45)]">
                 <div className="relative">
                   <ImageSlot
                     src={p.image}
@@ -135,65 +268,67 @@ export function Products() {
           ))}
         </ul>
       </div>
-    </section>
+    </Block>
   );
 }
 
+// Fondo sólido de cada tarjeta de receta (la comida va encima)
+const recipeBg = ["bg-gold", "bg-terracotta", "bg-sage"];
+
 export function Recipes() {
   return (
-    <section id="recetas" className={`bg-bone ${sectionY}`}>
+    <Block id="recetas" tone="bone" className={blockY}>
       <div className={container}>
-        <SectionHeading
-          eyebrow="Cómo prepararlo"
-          title="Tres ideas rápidas para empezar."
-          text="Recetas simples para el día a día."
-        />
-        <ul className="grid gap-12 md:grid-cols-3 md:gap-8">
+        <SectionHeading eyebrow="Recetas" title="Tres ideas rápidas para empezar." text="Recetas simples para el día a día." />
+        <ul className="grid gap-6 md:grid-cols-3">
           {recipes.map((r, i) => (
-            <Reveal as="li" key={r.id} delay={i * 90}>
-              <article className="group">
-                <div className="relative">
+            <Reveal as="li" key={r.id} delay={i * 90} className="flex">
+              <article className="group flex w-full flex-col overflow-hidden rounded-3xl bg-cream ring-1 ring-sand transition-[translate,box-shadow] duration-500 ease-[var(--ease-soft)] hover:-translate-y-2 hover:shadow-[0_30px_60px_-28px_rgb(47_64_48/0.45)]">
+                {/* Comida sobre color sólido: aquí va la foto del plato recortada (PNG) */}
+                <div className={`relative flex aspect-[4/3] items-center justify-center ${recipeBg[i % recipeBg.length]}`}>
                   <ImageSlot
                     src={r.image}
                     alt={r.title}
-                    ratio="4/3"
-                    label="Foto receta"
+                    ratio="1/1"
+                    label="Foto plato"
                     tone="warm"
-                    sizes="(min-width: 768px) 33vw, 100vw"
-                    className="rounded-3xl"
-                    innerClassName="transition-transform duration-700 ease-[var(--ease-soft)] group-hover:scale-105"
+                    sizes="(min-width: 768px) 22vw, 70vw"
+                    className="w-[54%] rounded-full shadow-[0_24px_40px_-18px_rgb(43_43_43/0.55)] ring-4 ring-bone/70"
+                    innerClassName="transition-transform duration-700 ease-[var(--ease-soft)] group-hover:scale-110"
                   />
-                  <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-bone px-3 py-1.5 text-sm font-medium text-charcoal shadow-sm">
-                    <Clock aria-hidden className="size-4 text-sage-deep" />
+                  <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-bone px-3 py-1.5 text-sm font-semibold text-charcoal shadow-sm">
+                    <Clock aria-hidden className="size-4 text-forest" />
                     {r.time}
                   </span>
                 </div>
-                <h3 className="mt-6 font-serif text-2xl text-forest">{r.title}</h3>
-                <ol className="mt-4 space-y-2 text-charcoal/75">
-                  {r.steps.map((s, n) => (
-                    <li key={n} className="flex gap-3 leading-relaxed">
-                      <span
-                        aria-hidden
-                        className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-gold text-xs font-semibold text-charcoal"
-                      >
-                        {n + 1}
-                      </span>
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ol>
+                <div className="p-6 md:p-7">
+                  <h3 className="font-serif text-2xl text-forest">{r.title}</h3>
+                  <ol className="mt-4 space-y-2 text-charcoal/80">
+                    {r.steps.map((step, n) => (
+                      <li key={n} className="flex gap-3 leading-relaxed">
+                        <span
+                          aria-hidden
+                          className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-forest text-xs font-semibold text-bone"
+                        >
+                          {n + 1}
+                        </span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
               </article>
             </Reveal>
           ))}
         </ul>
-        <Reveal className="mt-16 flex flex-col items-center gap-4 text-center">
+        <Reveal className="mt-14 flex flex-col items-center gap-4 text-center">
           <p className="font-serif text-3xl text-forest">¿Te dieron ganas?</p>
-          <RetailerLink retailer={lider} location="recetas">
+          <RetailerLink retailer={lider} location="recetas" size="lg">
             Encuéntralo en Líder
           </RetailerLink>
         </Reveal>
       </div>
-    </section>
+    </Block>
   );
 }
 
@@ -209,13 +344,13 @@ export function Faq() {
   };
 
   return (
-    <section id="preguntas" className={sectionY}>
+    <Block id="preguntas" tone="tint" className={blockY}>
       <div className="mx-auto max-w-3xl px-5 md:px-8">
         <SectionHeading eyebrow="Preguntas frecuentes" title="Resolvemos tus dudas." />
-        <Reveal className="border-t border-sand">
+        <Reveal className="border-t border-forest/20">
           {faqs.map((f) => (
-            <details key={f.q} className="group border-b border-sand">
-              <summary className="flex min-h-16 cursor-pointer items-center justify-between gap-6 py-6 font-serif text-xl text-forest transition-colors hover:text-sage-deep md:text-2xl">
+            <details key={f.q} className="group border-b border-forest/20">
+              <summary className="flex min-h-16 cursor-pointer items-center justify-between gap-6 py-6 font-serif text-xl text-forest transition-opacity hover:opacity-80 md:text-2xl">
                 {f.q}
                 <span
                   aria-hidden
@@ -224,14 +359,14 @@ export function Faq() {
                   <Plus className="size-4" />
                 </span>
               </summary>
-              <div className="pb-7 pr-10 text-lg leading-relaxed text-charcoal/75">
+              <div className="pb-7 pr-10 text-lg leading-relaxed text-charcoal/85">
                 <p>{f.a}</p>
                 {"showRetailerLink" in f && f.showRetailerLink && (
                   <RetailerLink
                     retailer={lider}
                     location="faq"
                     variant="plain"
-                    className="mt-4 inline-flex font-medium text-sage-deep underline underline-offset-4"
+                    className="mt-4 inline-flex font-semibold text-forest underline underline-offset-4"
                   >
                     Ir a Líder
                   </RetailerLink>
@@ -242,17 +377,17 @@ export function Faq() {
         </Reveal>
       </div>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-    </section>
+    </Block>
   );
 }
 
 /** B: franja de puntos de venta. Logos solo con permiso confirmado; si no, nombre en texto. */
 export function WhereToBuy() {
   return (
-    <section id="donde-comprar" className="border-y border-sand bg-bone py-16 md:py-20">
+    <Block id="donde-comprar" tone="bone" className="py-14 md:py-20">
       <div className={container}>
         <Reveal>
-          <p className="mb-10 text-center text-sm font-medium tracking-wide text-sage-deep">
+          <p className="mb-10 text-center text-sm font-medium tracking-wide text-forest">
             Dónde encontrarnos
           </p>
           <ul className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -279,17 +414,13 @@ export function WhereToBuy() {
           </ul>
         </Reveal>
       </div>
-    </section>
+    </Block>
   );
 }
 
 export function FinalCta() {
   return (
-    <section
-      id="cta-final"
-      className="grain relative isolate overflow-hidden bg-forest py-24 text-bone md:py-36"
-      data-final-cta
-    >
+    <Block id="cta-final" tone="forest" className="grain py-24 md:py-32" data-final-cta>
       <div
         aria-hidden
         className="absolute left-1/2 top-1/2 -z-10 size-[80vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--color-gold)_30%,transparent),transparent_60%)]"
@@ -301,13 +432,13 @@ export function FinalCta() {
           {finalCta.cta}
         </RetailerLink>
       </Reveal>
-    </section>
+    </Block>
   );
 }
 
 export function Footer() {
   return (
-    <footer className="bg-charcoal pb-28 pt-16 text-bone lg:pb-12">
+    <footer className="mt-3 bg-charcoal pb-28 pt-16 text-bone md:mt-6 lg:pb-12">
       <div className={`${container} grid gap-10 md:grid-cols-3`}>
         <div>
           <p className="font-serif text-2xl">Zen Organics</p>

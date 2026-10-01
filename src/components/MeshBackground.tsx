@@ -17,7 +17,7 @@ export function MeshBackground({ className = "" }: { className?: string }) {
   }, []);
 
   return (
-    <div ref={ref} aria-hidden className={`grain pointer-events-none absolute inset-0 overflow-hidden bg-cream ${className}`}>
+    <div ref={ref} aria-hidden className={`grain pointer-events-none absolute inset-0 overflow-hidden bg-cream [mask-image:linear-gradient(to_bottom,black_75%,transparent)] ${className}`}>
       <div
         className="mesh-blob mesh-blob--sage -left-[20%] -top-[25%] size-[90vmax] lg:size-[70vmax]"
         style={{ "--blob-anim": "drift-a", "--blob-dur": "28s" } as React.CSSProperties}

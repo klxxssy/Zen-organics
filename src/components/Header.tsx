@@ -7,20 +7,40 @@ import { RetailerLink } from "./RetailerLink";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
+    // Se oculta al bajar (no tapa títulos mientras lees) y reaparece al subir
+    let lastY = window.scrollY;
+    let ticking = false;
+    const update = () => {
+      const y = window.scrollY;
+      setScrolled(y > 8);
+      if (y < 120 || y < lastY - 4) setHidden(false);
+      else if (y > lastY + 4) setHidden(true);
+      lastY = y;
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const visible = !hidden || open;
+
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${
-        scrolled || open ? "border-b border-sand bg-bone/95 backdrop-blur" : "border-b border-transparent"
-      }`}
+      onFocusCapture={() => setHidden(false)}
+      className={`fixed inset-x-0 top-0 z-40 transition-[translate,background-color,border-color] duration-300 ease-[var(--ease-soft)] ${
+        visible ? "translate-y-0" : "-translate-y-full"
+      } ${scrolled || open ? "border-b border-sand bg-bone/95 backdrop-blur" : "border-b border-transparent"}`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 md:h-20 md:px-8">
         <a href="#inicio" className="font-serif text-xl font-medium tracking-tight md:text-2xl">

@@ -33,10 +33,11 @@ export function Marquee() {
   );
 
   return (
+    <div className="px-3 py-1.5 md:px-6 md:py-3">
     <div
       ref={ref}
       data-paused={userPaused || offscreen}
-      className="marquee relative overflow-hidden bg-forest py-6 md:py-8"
+      className="marquee relative overflow-hidden rounded-[2rem] bg-forest py-6 md:rounded-[3rem] md:py-8"
     >
       <p className="sr-only">{marquee.join(" · ")}</p>
       {/* Bordes difuminados; el lado derecho deja espacio al botón de pausa */}
@@ -54,6 +55,7 @@ export function Marquee() {
       >
         {userPaused ? <Play aria-hidden className="size-4" /> : <Pause aria-hidden className="size-4" />}
       </button>
+    </div>
     </div>
   );
 }

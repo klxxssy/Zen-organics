@@ -29,6 +29,7 @@ export const allRetailers: Retailer[] = [lider, ...otherRetailers];
 
 export const nav = [
   { label: "Beneficios", href: "#beneficios" },
+  { label: "Aprende", href: "#aprende" },
   { label: "Productos", href: "#productos" },
   { label: "Recetas", href: "#recetas" },
   { label: "Preguntas", href: "#preguntas" },
@@ -171,3 +172,58 @@ export const contact = {
 };
 
 export const marquee = ["Orgánico", "Proteína vegetal", "Hecho en Chile"];
+
+/** Badges tipo sticker. [PLACEHOLDER] hasta confirmarlos con la empresa. */
+export const badges = [
+  { label: "[PLACEHOLDER] Alto en proteína", tone: "gold", icon: "dumbbell" },
+  { label: "[PLACEHOLDER] Orgánico certificado", tone: "forest", icon: "sprout" },
+  { label: "[PLACEHOLDER] Hecho en Chile", tone: "sage", icon: "mapPin" },
+  { label: "[PLACEHOLDER] Sin conservantes", tone: "bone", icon: "leaf" },
+  { label: "[PLACEHOLDER] Apto vegano", tone: "gold", icon: "heart" },
+  { label: "[PLACEHOLDER] Fuente de calcio", tone: "forest", icon: "sparkles" },
+] as const;
+
+/** "Aprende a prepararlo": guías rápidas antes de productos. Borrador para revisar. */
+export const learn = {
+  eyebrow: "Aprende a prepararlo",
+  title: "Del envase a tu plato.",
+  text: "Tres guías rápidas para sacarle el máximo sabor a tu tofu.",
+  cards: [
+    {
+      id: "preparar",
+      tag: "Cómo prepararlo",
+      title: "Escurre, presiona y corta",
+      text: "Quitarle el agua es el secreto para una textura firme y dorada.",
+      steps: [
+        "Escurre el líquido del envase.",
+        "Envuélvelo en un paño y pon peso encima 15 minutos.",
+        "Córtalo en cubos, láminas o desmenúzalo.",
+      ],
+      image: null as string | null,
+    },
+    {
+      id: "cocinar",
+      tag: "Cómo cocinarlo",
+      title: "Sartén, horno o airfryer",
+      text: "Elige el método según la textura que buscas.",
+      steps: [
+        "Sartén: aceite caliente, 3 a 4 minutos por lado.",
+        "Horno: 200 °C por 25 minutos, dando vuelta a la mitad.",
+        "Airfryer: 180 °C por 15 minutos, agitando una vez.",
+      ],
+      image: null as string | null,
+    },
+    {
+      id: "tips",
+      tag: "Tips",
+      title: "Más sabor, más crocante",
+      text: "Pequeños trucos que hacen una gran diferencia.",
+      steps: [
+        "Marínalo al menos 30 minutos antes de cocinar.",
+        "Pásalo por maicena para un exterior crocante.",
+        "Agrega la salsa al final para que no se ablande.",
+      ],
+      image: null as string | null,
+    },
+  ],
+};
