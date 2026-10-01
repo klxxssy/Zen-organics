@@ -8,7 +8,8 @@ Stack: Next.js (App Router) + Tailwind CSS + React Three Fiber.
 
 - **Estilo**: marca de comida premium y moderna, con vida y color, sin perder la seriedad. Debe despertar apetito. Nada infantil ni caricaturesco: sin emojis, sin ilustraciones cartoon, sin tipografías display juguetonas.
 - **Tono**: cercano pero profesional. Tuteo, frases claras, sin chistes ni juegos de palabras.
-- **Ritmo**: alternar secciones claras (crema/hueso) y oscuras (verde bosque). Mucho aire, máximo 1 idea por bloque.
+- **Ritmo**: las secciones son **bloques de color con bordes redondeados** (radio 32–48px), separados del borde de la pantalla (12px en mobile, 24px en desktop) sobre el fondo `cream`. Alternan bloques claros (`bone`, `sage-tint`) y oscuros (`forest`). Mucho aire, máximo 1 idea por bloque.
+- **Personalidad (inspiración tofoo.co.uk, adaptada)**: badges tipo sticker, bloques de color redondeados y tarjetas de receta con la comida sobre color sólido. **Nunca**: tipografía tipo cómic, bloques inclinados, sus colores, textos o imágenes. Zen Organics sigue siendo más sobrio y premium.
 - **Fotos**: grandes, protagonistas, luz natural y tonos cálidos de comida. Los placeholders de comida usan tonos cálidos (dorado/arena), nunca grises.
 - **Animación**: viva pero suave. Entradas escalonadas, fade + desplazamiento corto (400–700 ms, `ease-out`), hovers con elevación y zoom suave. Nada de rebotes ni parallax agresivo. Toda animación continua (gradiente, franja, 3D) **se pausa fuera de pantalla** y se detiene con `prefers-reduced-motion`.
 
@@ -24,6 +25,8 @@ Stack: Next.js (App Router) + Tailwind CSS + React Three Fiber.
 | `sage-deep`      | `#5E6E55` | Links y texto de acento sobre fondos claros                          |
 | `charcoal`       | `#2B2B2B` | Textos y títulos sobre fondos claros; texto sobre `gold`             |
 | `sand`           | `#D9CFC1` | Bordes, divisores, detalles                                          |
+| `sage-tint`      | `color-mix(sage 25%, cream)` | Fondo de bloques claros alternos (texto `forest`, 7.6:1) |
+| `terracotta`     | `#B4603A` | Solo fondo de tarjetas de receta (tono de comida). Nunca con texto encima |
 
 En materiales 3D y placeholders de comida se permiten tonos naturales de alimento (verde edamame, tostados) derivados de esta paleta.
 
@@ -34,6 +37,7 @@ En materiales 3D y placeholders de comida se permiten tonos naturales de aliment
 - `gold` sobre `cream` o `bone`: 2.7:1. **Nunca como texto**, solo superficies, líneas y fondos de badge.
 - `sage` sobre blanco: 3.65:1. No sirve para texto normal; para links usa `sage-deep` (4.9:1 sobre `cream`).
 - `sand` es solo decorativo; nunca va como color de texto sobre fondos claros.
+- Sobre `sage-tint`, el texto de acento va en `forest`, no en `sage-deep` (3.9:1).
 
 ### Tipografía
 
@@ -65,11 +69,19 @@ Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo
 ## Hero
 
 - Fondo con gradiente animado tipo mesh (crema, salvia y dorado suaves), movimiento lento (20 s o más) y grano sutil. Va en CSS y se mueve solo con `transform`.
-- **Desktop**: tofu principal en 3D rodeado de cubos de tofu pequeños y granos de edamame flotando en distintas profundidades, con parallax suave según el mouse.
+- **Desktop**: solo el tofu principal en 3D (sin elementos flotantes alrededor), con giro lento e inclinación suave según el mouse.
 - **Mobile**: el mismo gradiente CSS en versión liviana más la imagen del producto, sin WebGL.
 - El gradiente y el 3D se pausan cuando el hero sale de pantalla.
 
+## Header
+
+- Fijo, pero **nunca tapa contenido al leer**: se oculta al hacer scroll hacia abajo y reaparece al subir, con el menú abierto o con foco de teclado. El hero reserva siempre la altura del header.
+
 ## Vida en el resto de la página
+
+- Fila de badges tipo sticker (dorado, salvia y verde bosque, ligera rotación de ±2°) justo después del hero. Sus textos son `[PLACEHOLDER]` hasta que la empresa los confirme.
+- Sección "Aprende a prepararlo" (Cómo prepararlo, Cómo cocinarlo, Tips) antes de productos.
+- Tarjetas de receta: foto de la comida sobre fondo sólido (`gold`, `terracotta`, `sage`), con el texto en la parte `bone` de la tarjeta.
 
 - Tarjetas con entrada escalonada.
 - Productos: en hover la tarjeta se eleva y la foto hace zoom suave.
