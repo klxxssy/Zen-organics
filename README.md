@@ -23,7 +23,7 @@ Después abre http://localhost:3000.
 | Textos, productos, recetas, FAQ, links y redes | `src/content/site.ts` |
 | Fotos | `public/images/`; en `site.ts` cambias `image: null` por `"/images/archivo.jpg"` |
 | Logos de puntos de venta (solo con permiso) | `public/images/`; en `site.ts` cambias `logo: null` por la ruta |
-| Foto del hero (TEMPORAL, Unsplash) | `src/content/site.ts` → `hero.backgroundImage` |
+| Slides del hero | `src/content/site.ts` → `heroSlides` |
 | Colores y tipografías | `src/app/globals.css` (bloque `@theme`) |
 
 Busca `[PLACEHOLDER]` para ver todo lo que falta confirmar.

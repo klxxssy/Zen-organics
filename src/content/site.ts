@@ -27,60 +27,71 @@ export const otherRetailers: Retailer[] = [
 
 export const allRetailers: Retailer[] = [lider, ...otherRetailers];
 
+// El header divide los links a ambos lados del logo (izquierda / derecha)
 export const nav = [
-  { label: "Beneficios", href: "#beneficios" },
+  { label: "Nosotros", href: "#nosotros" },
   { label: "Aprende", href: "#aprende" },
   { label: "Productos", href: "#productos" },
   { label: "Recetas", href: "#recetas" },
+  { label: "Dónde comprar", href: "#donde-comprar" },
   { label: "Preguntas", href: "#preguntas" },
 ];
 
-export const hero = {
-  kicker: "Tofu orgánico · Hecho en Chile",
-  title: "Proteína vegetal, simple y honesta.",
-  subtitle:
-    "Tofu orgánico elaborado en Chile, listo para tu cocina de todos los días. Encuéntralo en tu supermercado.",
-  cta: "Cómpralo en Líder",
-  secondary: "Ver productos",
-  // TEMPORAL: foto de ejemplo de Unsplash (licencia Unsplash, uso gratuito).
-  // "Bowl of vegetables with tofu" de sina piryae: https://unsplash.com/photos/NDX6Hr95dtQ
-  // Reemplazar por foto propia (ej. "/images/hero.jpg") antes de publicar.
-  backgroundImage: {
-    src: "https://unsplash.com/photos/NDX6Hr95dtQ/download?force=true&w=2400",
-    alt: "Bowl de verduras con tofu",
-  },
+/** Links del header de escritorio: 2 a cada lado del logo centrado (el resto va en menú móvil y footer). */
+export const headerNav = {
+  left: [nav[1], nav[2]],
+  right: [nav[3], nav[5]],
 };
 
-export const benefits = [
+/** Hero tipo carrusel sobre fondo forest. `tone` es el color del círculo detrás de los envases. */
+export const heroSlides = [
   {
-    icon: "leaf",
-    title: "Proteína vegetal",
-    text: "[PLACEHOLDER] g de proteína por cada 100 g. Una base nutritiva para tus comidas.",
+    id: "organico",
+    title: "Tofu orgánico hecho en Chile",
+    text: "Proteína vegetal, simple y honesta, para tu cocina de todos los días.",
+    cta: "Cómpralo en Líder",
+    tone: "gold",
   },
   {
-    icon: "sprout",
-    title: "Orgánico",
-    text: "Elaborado con soya orgánica. Certificación: [PLACEHOLDER].",
+    id: "proteina",
+    title: "Proteína vegetal sin complicaciones",
+    text: "Salteado, al horno o revuelto: toma el sabor de lo que cocines.",
+    cta: "Cómpralo en Líder",
+    tone: "sage",
   },
   {
-    icon: "utensils",
-    title: "Versátil",
-    text: "Salteado, al horno, en ensaladas o revuelto. Toma el sabor de lo que cocines.",
-  },
-  {
-    icon: "mapPin",
-    title: "Hecho en Chile",
-    text: "Producido localmente en [PLACEHOLDER: ciudad o región].",
+    id: "lider",
+    title: "Ya está en Líder",
+    text: "Búscalo en el refrigerado de tu supermercado.",
+    cta: "Ir a Líder",
+    tone: "terracotta",
   },
 ] as const;
+
+export const intro = {
+  kicker: "Orgánico · Proteína vegetal · Hecho en Chile",
+  title: "Tofu como debe ser.",
+  text: "Hacemos tofu orgánico en Chile para que comer rico y vegetal sea fácil. [PLACEHOLDER: historia breve de la marca, origen e ingredientes].",
+};
+
+/** Medios donde ha aparecido la marca. [PLACEHOLDER] hasta tener menciones reales. */
+export const press = {
+  title: "Nos han destacado en",
+  items: ["[PLACEHOLDER] Medio 1", "[PLACEHOLDER] Medio 2", "[PLACEHOLDER] Medio 3", "[PLACEHOLDER] Medio 4", "[PLACEHOLDER] Medio 5"],
+};
 
 export type Product = {
   id: string;
   name: string;
   description: string;
   format: string;
+  /** Categoría para los filtros de "Nuestra línea" */
+  category: string;
   image: string | null; // [PLACEHOLDER] ruta de la foto en /public/images
 };
+
+/** Filtros de la sección de productos. "Todos" siempre va primero. */
+export const productCategories = ["Todos", "[PLACEHOLDER] Categoría 1", "[PLACEHOLDER] Categoría 2"];
 
 export const products: Product[] = [
   {
@@ -88,6 +99,7 @@ export const products: Product[] = [
     name: "[PLACEHOLDER] Producto 1",
     description: "[PLACEHOLDER] Descripción breve: textura y mejor uso.",
     format: "[PLACEHOLDER] g",
+    category: "[PLACEHOLDER] Categoría 1",
     image: null,
   },
   {
@@ -95,6 +107,7 @@ export const products: Product[] = [
     name: "[PLACEHOLDER] Producto 2",
     description: "[PLACEHOLDER] Descripción breve: textura y mejor uso.",
     format: "[PLACEHOLDER] g",
+    category: "[PLACEHOLDER] Categoría 1",
     image: null,
   },
   {
@@ -102,6 +115,7 @@ export const products: Product[] = [
     name: "[PLACEHOLDER] Producto 3",
     description: "[PLACEHOLDER] Descripción breve: textura y mejor uso.",
     format: "[PLACEHOLDER] g",
+    category: "[PLACEHOLDER] Categoría 2",
     image: null,
   },
 ];
@@ -110,6 +124,7 @@ export const recipes = [
   {
     id: "salteado",
     title: "Salteado de tofu con verduras",
+    tag: "Sartén",
     time: "15 min",
     steps: [
       "Corta el tofu en cubos y sécalo con papel absorbente.",
@@ -121,6 +136,7 @@ export const recipes = [
   {
     id: "bowl",
     title: "Bowl de tofu crocante",
+    tag: "Horno",
     time: "25 min",
     steps: [
       "Presiona el tofu 10 minutos y córtalo en cubos.",
@@ -132,6 +148,7 @@ export const recipes = [
   {
     id: "revuelto",
     title: "Revuelto de tofu",
+    tag: "Desayuno",
     time: "10 min",
     steps: [
       "Desmenuza el tofu con un tenedor.",
@@ -177,8 +194,6 @@ export const contact = {
     { label: "TikTok", href: PLACEHOLDER_URL },
   ],
 };
-
-export const marquee = ["Orgánico", "Proteína vegetal", "Hecho en Chile"];
 
 /** Badges tipo sticker. [PLACEHOLDER] hasta confirmarlos con la empresa. */
 export const badges = [
@@ -233,4 +248,9 @@ export const learn = {
       image: null as string | null,
     },
   ],
+};
+
+export const social = {
+  title: "Síguenos",
+  text: "Recetas, ideas y novedades de Zen Organics.",
 };

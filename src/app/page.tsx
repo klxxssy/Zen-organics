@@ -1,34 +1,35 @@
 import { Header } from "@/components/Header";
-import { Hero } from "@/components/Hero";
+import { HeroSlider } from "@/components/HeroSlider";
 import {
-  Benefits,
   Faq,
-  FinalCta,
   Footer,
+  Intro,
   Learn,
+  Press,
   Products,
   Recipes,
-  StickerBadges,
+  Social,
+  StickerRow,
   WhereToBuy,
 } from "@/components/Sections";
-import { Marquee } from "@/components/Marquee";
 import { StickyMobileCta } from "@/components/StickyMobileCta";
 
+// Estructura inspirada en tofoo.co.uk, con la identidad de Zen Organics
 export default function Home() {
   return (
     <>
       <Header />
       <main>
-        <Hero />
-        <StickerBadges />
-        <Benefits />
+        <HeroSlider />
+        <Intro />
+        <StickerRow />
+        <Press />
         <Learn />
         <Products />
-        <Marquee />
+        <WhereToBuy />
         <Recipes />
         <Faq />
-        <WhereToBuy />
-        <FinalCta />
+        <Social />
       </main>
       <Footer />
       <StickyMobileCta />

@@ -2,7 +2,7 @@
 
 Landing de Zen Organics, marca chilena de tofu orgánico. **La web no vende directo**: su único objetivo es derivar a comprar en Líder y otros puntos de venta. Toda decisión de diseño y copy se evalúa por cuánto facilita ese click.
 
-Stack: Next.js (App Router) + Tailwind CSS + framer-motion (solo en el hero). Componentes de UI reutilizables en `src/components/ui/`.
+Stack: Next.js (App Router) + Tailwind CSS. Estructura de página inspirada en tofoo.co.uk (rama `zen-tofoo`), con la identidad de Zen Organics.
 
 ## Identidad de marca (obligatorio)
 
@@ -46,7 +46,7 @@ En placeholders de comida se permiten tonos naturales de alimento (verde edamame
 - Cargar ambas con `next/font/google` (self-hosted, `display: swap`). Nada de `@import` de Google Fonts.
 - Clases: `font-display` para títulos y `font-sans` para el resto.
 - Cuerpo mínimo 16px, interlineado 1.6, líneas de 60–75 caracteres.
-- Los títulos grandes (h1/h2) entran palabra por palabra al hacer scroll (fade + subida corta, ~70 ms entre palabras). El h1 del hero se anima solo con CSS, sin esperar JS, para no afectar el LCP. Con reducir movimiento se muestran completos y quietos.
+- Los títulos grandes (h1/h2) entran palabra por palabra al hacer scroll (fade + subida corta, ~70 ms entre palabras). Con reducir movimiento se muestran completos y quietos.
 
 ## Reglas de contenido
 
@@ -68,32 +68,34 @@ Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo
 - **"Comprar en Líder" es lo que más resalta en cada pantalla.** Va como botón sólido `gold` con texto `charcoal`, sombra cálida y flecha que se mueve en hover. Ningún otro elemento dorado puede tener más peso visual que el botón en la misma pantalla.
 - El CTA secundario "Otros puntos de venta" va en outline (`charcoal` en fondos claros, `bone` en fondos oscuros).
 
-## Hero
+## Estructura de la página (inspirada en tofoo.co.uk)
 
-- Componente **Prisma Hero** de 21st.dev (`src/components/ui/prisma-hero.tsx`), adaptado: foto de fondo a pantalla completa en un bloque redondeado, ruido y degradado `forest`, título gigante en Lilita One color `cream` abajo a la izquierda, y subtítulo con CTA a la derecha.
-- Animación original del componente (framer-motion): el título sube palabra por palabra y el subtítulo y el CTA entran escalonados. `MotionConfig reducedMotion="user"` respeta "reducir movimiento".
-- El CTA es el link de compra (`RetailerLink`, evento `click_lider`, `location: "hero"`) con el estilo del botón original: cápsula `gold` y círculo `forest` con flecha.
-- La foto de fondo actual es **TEMPORAL** (Unsplash) y está en `src/content/site.ts` → `hero.backgroundImage`. Se reemplaza por una foto propia en `/public/images` (y ahí se quita `unoptimized`).
-- El hero reserva la altura del header grande, así nunca queda tapado.
+1. Hero en carrusel (`HeroSlider`): bloque `forest`, título gigante, CTA de compra y envases sobre un círculo de color (`gold`, `sage` o `terracotta` según el slide). Autoplay con botón de pausa; se detiene con hover, foco, fuera de pantalla y reducir movimiento.
+2. Intro: título grande, kicker en mayúsculas pequeñas y párrafo de marca.
+3. Fila de stickers en movimiento (`MarqueeRow`).
+4. "Nos han destacado en": medios `[PLACEHOLDER]`.
+5. Aprende a prepararlo: bloque `gold` con 3 tarjetas `bone` (etiqueta tipo sticker y pasos desplegables).
+6. Nuestra línea: bloque `sage-tint` con filtros tipo chip y tarjetas de producto.
+7. Encuéntranos en: puntos de venta en movimiento.
+8. Recetas: bloque `forest` con carrusel (scroll nativo, flechas y puntos); la comida va sobre `gold`, `terracotta` o `sage`.
+9. Preguntas: bloque `terracotta` con preguntas en tarjetas `bone` (el texto `bone` sobre `terracotta` solo en el título grande).
+10. Síguenos: redes sociales.
+11. Footer: bloque `forest` con logo grande, CTA de compra, links y plato que asoma.
 
 ## Header
 
-- Fondo `forest`; logo y links en `cream`; botón "Comprar en Líder" en `gold` (como en todo el sitio).
+- Fondo `forest`; logo centrado en una cápsula `cream`, con 2 links a cada lado (escritorio) y el botón "Comprar en Líder" en `gold` a la derecha. En mobile: logo, botón y menú hamburguesa (el menú incluye todos los links).
 - **Arriba de todo** (sin scroll): ocupa todo el ancho, es alto (≈112px en desktop y 80px en mobile), con el logo grande, los links en letra grande y mucho espacio entre ellos.
 - **Al hacer scroll**: se achica con una transición suave (menos alto y logo más chico) y se convierte en una barra flotante con bordes redondeados, separada de los bordes de la pantalla y con sombra. Al volver arriba recupera su tamaño grande.
 - **Mobile**: el mismo comportamiento con menú hamburguesa; el menú desplegado también va en `forest`.
 - El hero reserva siempre la altura del header grande, así nunca tapa el título. Con reducir movimiento el cambio es instantáneo.
 - Hover de links: subrayado `gold` (el texto se mantiene en `cream`, porque `gold` sobre `forest` no da contraste para texto normal). El foco visible en el header va en `gold`.
 
-## Vida en el resto de la página
+## Vida en la página
 
-- Fila de badges tipo sticker (dorado, salvia y verde bosque, ligera rotación de ±2°) justo después del hero. Sus textos son `[PLACEHOLDER]` hasta que la empresa los confirme.
-- Sección "Aprende a prepararlo" (Cómo prepararlo, Cómo cocinarlo, Tips) antes de productos.
-- Tarjetas de receta: foto de la comida sobre fondo sólido (`gold`, `terracotta`, `sage`), con el texto en la parte `bone` de la tarjeta.
-
-- Tarjetas con entrada escalonada.
-- Productos: en hover la tarjeta se eleva y la foto hace zoom suave.
-- Franja de texto en movimiento infinito entre secciones: "Orgánico · Proteína vegetal · Hecho en Chile". Se pausa en hover y fuera de pantalla, tiene botón de pausa y queda quieta con reducir movimiento.
+- Tarjetas con entrada escalonada y títulos palabra por palabra.
+- Hover: las tarjetas se elevan y las fotos hacen zoom suave.
+- Toda fila en movimiento tiene botón de pausa, se pausa en hover y fuera de pantalla, y queda quieta con reducir movimiento.
 
 ## Performance y mobile
 

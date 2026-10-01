@@ -2,7 +2,7 @@
 
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { lider, nav } from "@/content/site";
+import { headerNav, lider, nav } from "@/content/site";
 import { RetailerLink } from "./RetailerLink";
 
 /**
@@ -10,6 +10,38 @@ import { RetailerLink } from "./RetailerLink";
  * Al hacer scroll: se achica y flota como cápsula redondeada con sombra.
  * Las transiciones se anulan con prefers-reduced-motion (globals.css).
  */
+const leftNav = headerNav.left;
+const rightNav = headerNav.right;
+
+function NavLinks({
+  items,
+  compact,
+  label,
+  className = "",
+}: {
+  items: typeof nav;
+  compact: boolean;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <nav aria-label={label} className={className}>
+      <ul className={`flex items-center transition-[gap,font-size] duration-500 ${compact ? "gap-6 text-[15px]" : "gap-5 text-base xl:gap-7 xl:text-[17px]"}`}>
+        {items.map((item) => (
+          <li key={item.href}>
+            <a
+              href={item.href}
+              className="whitespace-nowrap font-bold text-cream underline decoration-2 underline-offset-[6px] [text-decoration-color:transparent] transition-[text-decoration-color] duration-200 hover:[text-decoration-color:var(--color-gold)]"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 export function Header() {
   const [compact, setCompact] = useState(false);
   const [open, setOpen] = useState(false);
@@ -54,44 +86,30 @@ export function Header() {
             : "max-w-full rounded-none shadow-none"
         }`}
       >
+        {/* Desktop (xl): links a ambos lados del logo centrado, como tofoo.co.uk */}
         <div
-          className={`mx-auto flex max-w-7xl items-center justify-between transition-[height,padding] ${ease} ${
-            compact ? "h-16 px-4 md:h-[4.5rem] md:px-6" : "h-20 px-5 md:px-10 lg:h-28"
+          className={`mx-auto flex max-w-7xl items-center justify-between transition-[height,padding] lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-4 xl:gap-8 ${ease} ${
+            compact ? "h-16 px-4 md:h-[4.5rem] md:px-6" : "h-20 px-5 md:px-10 lg:h-28 lg:px-6 xl:px-10"
           }`}
         >
+          <NavLinks items={leftNav} compact={compact} label="Principal" className="hidden lg:flex" />
+
           <a
             href="#inicio"
-            className={`font-display leading-none transition-[font-size] ${ease} ${
-              compact ? "text-2xl md:text-[1.75rem]" : "text-[1.9rem] md:text-4xl lg:text-[2.75rem]"
+            aria-label="Zen Organics, ir al inicio"
+            className={`inline-flex items-center justify-center rounded-full bg-cream font-display leading-none text-forest shadow-[0_6px_16px_-8px_rgb(0_0_0/0.5)] transition-[font-size,padding] ${ease} ${
+              compact ? "px-4 py-2 text-xl md:text-2xl" : "px-5 py-2.5 text-2xl md:text-3xl lg:px-6 lg:py-3 lg:text-[2.1rem] xl:px-7 xl:py-4 xl:text-[2.6rem]"
             }`}
           >
             Zen Organics
           </a>
 
-          <nav aria-label="Principal" className="hidden lg:block">
-            <ul
-              className={`flex items-center transition-[gap,font-size] ${ease} ${
-                compact ? "gap-8 text-base" : "gap-12 text-lg"
-              }`}
-            >
-              {nav.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="font-semibold text-cream underline decoration-2 underline-offset-[6px] [text-decoration-color:transparent] transition-[text-decoration-color] duration-200 hover:[text-decoration-color:var(--color-gold)]"
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2 lg:justify-between lg:gap-4 xl:gap-6">
+            <NavLinks items={rightNav} compact={compact} label="Principal (continuación)" className="hidden lg:flex" />
             <RetailerLink
               retailer={lider}
               location="header"
-              className={`max-sm:!hidden ${compact ? "!min-h-11 !px-5 !text-sm" : "lg:!min-h-14 lg:!px-7 lg:!text-base"}`}
+              className={`whitespace-nowrap max-sm:!hidden ${compact ? "!min-h-11 !px-5 !text-sm" : "lg:!px-4 lg:!text-sm xl:!min-h-14 xl:!px-7 xl:!text-base"}`}
             >
               Comprar en Líder
             </RetailerLink>

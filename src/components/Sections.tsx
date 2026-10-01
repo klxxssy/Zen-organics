@@ -1,55 +1,42 @@
-import {
-  ChevronDown,
-  Clock,
-  Dumbbell,
-  Heart,
-  Leaf,
-  MapPin,
-  Plus,
-  Sparkles,
-  Sprout,
-  UtensilsCrossed,
-} from "lucide-react";
+import { Dumbbell, Heart, Leaf, MapPin, Plus, Sparkles, Sprout } from "lucide-react";
 import type { ReactNode } from "react";
 import {
   allRetailers,
   badges,
-  benefits,
   contact,
   faqs,
   finalCta,
+  intro,
   learn,
   lider,
-  products,
-  recipes,
+  nav,
+  press,
+  social,
 } from "@/content/site";
 import { ImageSlot } from "./ImageSlot";
-import { OtherRetailersButton } from "./OtherRetailersButton";
+import { LearnCard } from "./LearnCard";
+import { MarqueeRow } from "./MarqueeRow";
+import { ProductRange } from "./ProductRange";
+import { RecipeCarousel } from "./RecipeCarousel";
 import { RetailerLink } from "./RetailerLink";
 import { Reveal } from "./Reveal";
 import { Words } from "./Words";
 
 const container = "mx-auto max-w-7xl px-5 md:px-10";
-const blockY = "py-16 md:py-24 lg:py-28";
+const blockY = "py-16 md:py-24";
 
-type Tone = "forest" | "bone" | "tint";
-const toneBg: Record<Tone, string> = { forest: "bg-forest text-bone", bone: "bg-bone", tint: "bg-sage-tint" };
+type Tone = "forest" | "tint" | "gold" | "terracotta";
+const toneBg: Record<Tone, string> = {
+  forest: "bg-forest text-cream",
+  tint: "bg-sage-tint text-forest",
+  gold: "bg-gold text-charcoal",
+  terracotta: "bg-terracotta text-bone",
+};
 
 /** Sección como bloque de color redondeado, separado del borde de la pantalla. */
-function Block({
-  id,
-  tone,
-  children,
-  className = "",
-  ...rest
-}: {
-  id: string;
-  tone: Tone;
-  children: ReactNode;
-  className?: string;
-} & Record<`data-${string}`, boolean | string>) {
+function Block({ id, tone, children, className = "" }: { id: string; tone: Tone; children: ReactNode; className?: string }) {
   return (
-    <section id={id} className="px-3 py-1.5 md:px-6 md:py-3" {...rest}>
+    <section id={id} className="px-3 py-1.5 md:px-6 md:py-3">
       <div className={`relative isolate overflow-hidden rounded-[2rem] md:rounded-[3rem] ${toneBg[tone]} ${className}`}>
         {children}
       </div>
@@ -57,44 +44,35 @@ function Block({
   );
 }
 
-function SectionHeading({
-  eyebrow,
-  title,
-  text,
-  dark = false,
-}: {
-  eyebrow: string;
-  title: string;
-  text?: string;
-  /** Texto claro para bloques forest */
-  dark?: boolean;
-}) {
+/** Título de sección grande en Lilita One, animado palabra por palabra. */
+function SectionTitle({ title, text }: { title: string; text?: string }) {
   return (
-    <Reveal className="mx-auto mb-12 max-w-2xl text-center md:mb-16">
-      <p
-        className={`mb-5 inline-flex items-center gap-2 text-sm font-medium tracking-wide ${
-          dark ? "text-bone/85" : "text-forest"
-        }`}
-      >
-        <span aria-hidden className="h-px w-6 bg-gold" />
-        {eyebrow}
-        <span aria-hidden className="h-px w-6 bg-gold" />
-      </p>
-      <h2
-        className={`font-display text-4xl leading-[1.05] text-balance md:text-6xl ${
-          dark ? "text-bone" : "text-forest"
-        }`}
-      >
+    <Reveal className="mx-auto mb-10 max-w-3xl text-center md:mb-14">
+      <h2 className="font-display text-[2.6rem] leading-[1.02] text-balance md:text-6xl lg:text-7xl">
         <Words text={title} />
       </h2>
-      {text && (
-        <p className={`mt-5 text-lg leading-relaxed ${dark ? "text-bone/80" : "text-charcoal/75"}`}>{text}</p>
-      )}
+      {text && <p className="mx-auto mt-4 max-w-xl text-lg font-medium leading-relaxed">{text}</p>}
     </Reveal>
   );
 }
 
-const benefitIcons = { leaf: Leaf, sprout: Sprout, utensils: UtensilsCrossed, mapPin: MapPin };
+/* ---------------------------------------------------------------- Intro */
+
+export function Intro() {
+  return (
+    <section id="nosotros" className="px-5 pb-10 pt-20 text-center md:pt-28">
+      <Reveal className="mx-auto max-w-3xl">
+        <h2 className="font-display text-5xl leading-none text-forest md:text-7xl">
+          <Words text={intro.title} />
+        </h2>
+        <p className="mt-6 text-xs font-bold uppercase tracking-[0.25em] text-forest md:text-sm">{intro.kicker}</p>
+        <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-charcoal/80">{intro.text}</p>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- Stickers */
 
 const badgeIcons = { dumbbell: Dumbbell, sprout: Sprout, mapPin: MapPin, leaf: Leaf, heart: Heart, sparkles: Sparkles };
 const badgeTone = {
@@ -103,84 +81,65 @@ const badgeTone = {
   sage: { box: "bg-sage-tint text-forest ring-2 ring-sage", icon: "bg-sage text-bone" },
   bone: { box: "bg-bone text-forest ring-1 ring-sand", icon: "bg-sage-tint" },
 };
-// Rotación sutil tipo sticker (no bloques inclinados)
 const tilts = ["-rotate-2", "rotate-[1.5deg]", "-rotate-1", "rotate-2", "-rotate-[1.5deg]", "rotate-1"];
 
-/** Fila de badges tipo sticker. Textos [PLACEHOLDER] hasta confirmarlos. */
-export function StickerBadges() {
+/** Fila de stickers en movimiento (textos [PLACEHOLDER] hasta confirmarlos con la empresa). */
+export function StickerRow() {
   return (
-    <section aria-label="Atributos del producto" className="px-5 py-10 md:py-14">
-      <ul className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-3 gap-y-4 md:gap-x-5">
-        {badges.map((b, i) => {
-          const Icon = badgeIcons[b.icon];
-          const t = badgeTone[b.tone];
-          return (
-            <Reveal as="li" key={b.label} delay={i * 60}>
-              <span
-                className={`inline-flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-4 text-sm font-semibold md:gap-2.5 md:py-2 md:pl-2 md:pr-5 shadow-[0_8px_18px_-10px_rgb(47_64_48/0.55)] transition-transform duration-300 hover:rotate-0 hover:scale-105 md:text-base ${t.box} ${tilts[i % tilts.length]}`}
-              >
-                <span className={`inline-flex size-8 items-center justify-center rounded-full ${t.icon}`}>
-                  <Icon aria-hidden className="size-4" strokeWidth={2} />
-                </span>
-                {b.label}
+    <MarqueeRow label="atributos del producto" duration={45} className="py-4" buttonClassName="bg-forest text-cream">
+      {badges.map((b, i) => {
+        const Icon = badgeIcons[b.icon];
+        const t = badgeTone[b.tone];
+        return (
+          <li key={b.label} className="px-3 py-3">
+            <span
+              className={`inline-flex items-center gap-2.5 whitespace-nowrap rounded-2xl py-2 pl-2 pr-5 text-base font-bold shadow-[0_8px_18px_-10px_rgb(47_64_48/0.55)] ${t.box} ${tilts[i % tilts.length]}`}
+            >
+              <span className={`inline-flex size-9 items-center justify-center rounded-xl ${t.icon}`}>
+                <Icon aria-hidden className="size-5" strokeWidth={2} />
               </span>
-            </Reveal>
-          );
-        })}
-      </ul>
+              {b.label}
+            </span>
+          </li>
+        );
+      })}
+    </MarqueeRow>
+  );
+}
+
+/* ---------------------------------------------------------------- Prensa */
+
+export function Press() {
+  return (
+    <section aria-labelledby="prensa" className="px-5 pb-16 pt-12 md:pb-20">
+      <Reveal className="mx-auto max-w-6xl text-center">
+        <h2 id="prensa" className="font-display text-4xl text-forest md:text-5xl">
+          {press.title}
+        </h2>
+        {/* [PLACEHOLDER] reemplazar por logos de medios (con permiso) */}
+        <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 md:gap-x-14">
+          {press.items.map((m) => (
+            <li key={m} className="font-display text-lg text-charcoal/60 md:text-xl">
+              {m}
+            </li>
+          ))}
+        </ul>
+      </Reveal>
     </section>
   );
 }
 
-/** "Aprende a prepararlo": 3 guías con pasos desplegables. */
+/* ---------------------------------------------------------------- Aprende */
+
 export function Learn() {
   return (
-    <Block id="aprende" tone="tint" className={blockY}>
+    <Block id="aprende" tone="gold" className={blockY}>
       <div className={container}>
-        <SectionHeading eyebrow={learn.eyebrow} title={learn.title} text={learn.text} />
+        <SectionTitle title={learn.eyebrow} text={learn.text} />
         <ul className="grid gap-6 md:grid-cols-3">
           {learn.cards.map((c, i) => (
             <Reveal as="li" key={c.id} delay={i * 90} className="flex">
-              <article className="group flex w-full flex-col rounded-3xl bg-bone p-3 shadow-[0_20px_40px_-30px_rgb(47_64_48/0.6)] transition-[translate] duration-500 ease-[var(--ease-soft)] hover:-translate-y-1.5">
-                <div className="relative">
-                  <ImageSlot
-                    src={c.image}
-                    alt={c.title}
-                    ratio="4/3"
-                    label="Foto guía"
-                    tone="warm"
-                    sizes="(min-width: 768px) 30vw, 100vw"
-                    className="rounded-[1.25rem]"
-                    innerClassName="transition-transform duration-700 ease-[var(--ease-soft)] group-hover:scale-105"
-                  />
-                  <span className="absolute -top-2 left-4 -rotate-2 rounded-xl bg-forest px-4 py-2 font-display text-lg text-bone shadow-md">
-                    {c.tag}
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col px-4 pb-4 pt-6">
-                  <h3 className="font-display text-2xl text-forest">{c.title}</h3>
-                  <p className="mt-2 leading-relaxed text-charcoal/80">{c.text}</p>
-                  <details className="group/steps mt-5">
-                    <summary className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-forest px-5 text-[15px] font-semibold text-forest transition-colors hover:bg-forest hover:text-bone">
-                      Ver pasos
-                      <ChevronDown aria-hidden className="size-4 transition-transform duration-300 group-open/steps:rotate-180" />
-                    </summary>
-                    <ol className="mt-4 space-y-2 text-charcoal/80">
-                      {c.steps.map((step, n) => (
-                        <li key={n} className="flex gap-3 leading-relaxed">
-                          <span
-                            aria-hidden
-                            className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-gold text-xs font-semibold text-charcoal"
-                          >
-                            {n + 1}
-                          </span>
-                          <span>{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </details>
-                </div>
-              </article>
+              <LearnCard card={c} />
             </Reveal>
           ))}
         </ul>
@@ -189,149 +148,68 @@ export function Learn() {
   );
 }
 
-export function Benefits() {
-  return (
-    <Block id="beneficios" tone="forest" className={blockY}>
-      {/* Brillo cálido sutil para dar profundidad al verde */}
-      <div
-        aria-hidden
-        className="absolute -right-[20%] -top-[30%] -z-10 size-[70vmax] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--color-gold)_22%,transparent),transparent_65%)]"
-      />
-      <div className={container}>
-        <SectionHeading dark eyebrow="Por qué Zen Organics" title="Lo esencial, bien hecho." />
-        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map((b, i) => {
-            const Icon = benefitIcons[b.icon];
-            return (
-              <Reveal
-                as="li"
-                key={b.title}
-                delay={i * 90}
-                className="rounded-3xl border border-bone/10 bg-bone/[0.04] p-7 md:p-8"
-              >
-                <div className="mb-8 flex items-center justify-between">
-                  <span className="inline-flex size-14 items-center justify-center rounded-2xl bg-gold text-charcoal">
-                    <Icon aria-hidden className="size-6" strokeWidth={1.75} />
-                  </span>
-                  <span aria-hidden className="font-display text-4xl text-gold">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3 className="font-display text-2xl text-bone">{b.title}</h3>
-                <p className="mt-3 leading-relaxed text-bone/80">{b.text}</p>
-              </Reveal>
-            );
-          })}
-        </ul>
-      </div>
-    </Block>
-  );
-}
+/* ---------------------------------------------------------------- Productos */
 
 export function Products() {
   return (
-    <Block id="productos" tone="bone" className={blockY}>
+    <Block id="productos" tone="tint" className={blockY}>
       <div className={container}>
-        <SectionHeading
-          eyebrow="Nuestros productos"
-          title="Elige tu tofu."
-          text="Disponibles en Líder y otros puntos de venta."
-        />
-        <ul className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {products.map((p, i) => (
-            <Reveal as="li" key={p.id} delay={i * 90} className="flex">
-              <article className="group flex w-full flex-col overflow-hidden rounded-3xl bg-cream ring-1 ring-sand transition-[translate,box-shadow] duration-500 ease-[var(--ease-soft)] hover:-translate-y-2 hover:shadow-[0_30px_60px_-28px_rgb(47_64_48/0.45)]">
-                <div className="relative">
-                  <ImageSlot
-                    src={p.image}
-                    alt={`Envase de ${p.name}`}
-                    ratio="4/5"
-                    label="Foto producto"
-                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                    innerClassName="transition-transform duration-700 ease-[var(--ease-soft)] group-hover:scale-105"
-                  />
-                  <span className="absolute left-4 top-4 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-charcoal">
-                    {p.format}
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col p-6 md:p-8">
-                <h3 className="font-display text-2xl text-forest">{p.name}</h3>
-                <p className="mt-3 flex-1 leading-relaxed text-charcoal/75">{p.description}</p>
-                <div className="mt-6 flex flex-col gap-3">
-                  <RetailerLink retailer={lider} location="producto" product={p.id}>
-                    Comprar en Líder
-                  </RetailerLink>
-                  <OtherRetailersButton product={p.id} productName={p.name} />
-                </div>
-              </div>
-              </article>
-            </Reveal>
-          ))}
-        </ul>
+        <SectionTitle title="Nuestra línea" text="Disponible en Líder y otros puntos de venta." />
+        <ProductRange />
       </div>
     </Block>
   );
 }
 
-// Fondo sólido de cada tarjeta de receta (la comida va encima)
-const recipeBg = ["bg-gold", "bg-terracotta", "bg-sage"];
+/* ---------------------------------------------------------------- Dónde comprar */
+
+/** Puntos de venta en movimiento. Logos solo con permiso; si no, el nombre en texto. */
+export function WhereToBuy() {
+  return (
+    <section id="donde-comprar" aria-labelledby="donde-comprar-titulo" className="py-12 md:py-16">
+      <h2 id="donde-comprar-titulo" className="mb-6 text-center font-display text-4xl text-forest md:text-5xl">
+        Encuéntranos en
+      </h2>
+      <MarqueeRow label="puntos de venta" duration={35} buttonClassName="bg-forest text-cream">
+        {[...allRetailers, ...allRetailers].map((r, i) => (
+          <li key={`${r.id}-${i}`} className="px-3 py-2">
+            <RetailerLink
+              retailer={r}
+              location="donde_comprar"
+              variant="plain"
+              className="flex h-20 min-w-52 flex-col items-center justify-center rounded-2xl border border-sand bg-bone px-6 text-center transition-[translate,border-color] duration-300 hover:-translate-y-1 hover:border-gold"
+            >
+              {r.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={r.logo} alt={r.name} className="max-h-10 w-auto" loading="lazy" />
+              ) : (
+                <>
+                  <span className="whitespace-nowrap font-display text-xl text-forest">{r.name}</span>
+                  <span className="text-[11px] text-charcoal/60">[PLACEHOLDER] logo</span>
+                </>
+              )}
+            </RetailerLink>
+          </li>
+        ))}
+      </MarqueeRow>
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- Recetas */
 
 export function Recipes() {
   return (
-    <Block id="recetas" tone="bone" className={blockY}>
+    <Block id="recetas" tone="forest" className={blockY}>
       <div className={container}>
-        <SectionHeading eyebrow="Recetas" title="Tres ideas rápidas para empezar." text="Recetas simples para el día a día." />
-        <ul className="grid gap-6 md:grid-cols-3">
-          {recipes.map((r, i) => (
-            <Reveal as="li" key={r.id} delay={i * 90} className="flex">
-              <article className="group flex w-full flex-col overflow-hidden rounded-3xl bg-cream ring-1 ring-sand transition-[translate,box-shadow] duration-500 ease-[var(--ease-soft)] hover:-translate-y-2 hover:shadow-[0_30px_60px_-28px_rgb(47_64_48/0.45)]">
-                {/* Comida sobre color sólido: aquí va la foto del plato recortada (PNG) */}
-                <div className={`relative flex aspect-[4/3] items-center justify-center ${recipeBg[i % recipeBg.length]}`}>
-                  <ImageSlot
-                    src={r.image}
-                    alt={r.title}
-                    ratio="1/1"
-                    label="Foto plato"
-                    tone="warm"
-                    sizes="(min-width: 768px) 22vw, 70vw"
-                    className="w-[54%] rounded-full shadow-[0_24px_40px_-18px_rgb(43_43_43/0.55)] ring-4 ring-bone/70"
-                    innerClassName="transition-transform duration-700 ease-[var(--ease-soft)] group-hover:scale-110"
-                  />
-                  <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-bone px-3 py-1.5 text-sm font-semibold text-charcoal shadow-sm">
-                    <Clock aria-hidden className="size-4 text-forest" />
-                    {r.time}
-                  </span>
-                </div>
-                <div className="p-6 md:p-7">
-                  <h3 className="font-display text-2xl text-forest">{r.title}</h3>
-                  <ol className="mt-4 space-y-2 text-charcoal/80">
-                    {r.steps.map((step, n) => (
-                      <li key={n} className="flex gap-3 leading-relaxed">
-                        <span
-                          aria-hidden
-                          className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-forest text-xs font-semibold text-bone"
-                        >
-                          {n + 1}
-                        </span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </ul>
-        <Reveal className="mt-14 flex flex-col items-center gap-4 text-center">
-          <p className="font-display text-3xl text-forest">¿Te dieron ganas?</p>
-          <RetailerLink retailer={lider} location="recetas" size="lg">
-            Encuéntralo en Líder
-          </RetailerLink>
-        </Reveal>
+        <SectionTitle title="Recetas para todos los días" text="Ideas simples para cocinar con Zen Organics." />
+        <RecipeCarousel />
       </div>
     </Block>
   );
 }
+
+/* ---------------------------------------------------------------- Preguntas */
 
 export function Faq() {
   const jsonLd = {
@@ -345,29 +223,30 @@ export function Faq() {
   };
 
   return (
-    <Block id="preguntas" tone="tint" className={blockY}>
+    <Block id="preguntas" tone="terracotta" className={blockY}>
       <div className="mx-auto max-w-3xl px-5 md:px-8">
-        <SectionHeading eyebrow="Preguntas frecuentes" title="Resolvemos tus dudas." />
-        <Reveal className="border-t border-forest/20">
+        {/* bone sobre terracotta (4:1) solo en el título grande; preguntas y respuestas van sobre bone */}
+        <SectionTitle title="Resolvemos tus dudas" />
+        <Reveal className="flex flex-col gap-3">
           {faqs.map((f) => (
-            <details key={f.q} className="group border-b border-forest/20">
-              <summary className="flex min-h-16 cursor-pointer items-center justify-between gap-6 py-6 font-display text-xl text-forest transition-opacity hover:opacity-80 md:text-2xl">
+            <details key={f.q} className="group rounded-2xl bg-bone text-charcoal shadow-[0_10px_24px_-18px_rgb(0_0_0/0.6)]">
+              <summary className="flex min-h-16 cursor-pointer items-center justify-between gap-6 px-6 py-4 text-lg font-bold text-forest">
                 {f.q}
                 <span
                   aria-hidden
-                  className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-forest/25 text-forest transition-[rotate,background-color,border-color] duration-300 group-open:rotate-45 group-open:border-gold group-open:bg-gold group-open:text-charcoal"
+                  className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-forest text-cream transition-[rotate,background-color] duration-300 group-open:rotate-45 group-open:bg-gold group-open:text-charcoal"
                 >
                   <Plus className="size-4" />
                 </span>
               </summary>
-              <div className="pb-7 pr-10 text-lg leading-relaxed text-charcoal/85">
+              <div className="px-6 pb-6 text-base leading-relaxed text-charcoal/85">
                 <p>{f.a}</p>
                 {"showRetailerLink" in f && f.showRetailerLink && (
                   <RetailerLink
                     retailer={lider}
                     location="faq"
                     variant="plain"
-                    className="mt-4 inline-flex font-semibold text-forest underline underline-offset-4"
+                    className="mt-3 inline-flex font-bold text-forest underline underline-offset-4"
                   >
                     Ir a Líder
                   </RetailerLink>
@@ -382,98 +261,78 @@ export function Faq() {
   );
 }
 
-/** B: franja de puntos de venta. Logos solo con permiso confirmado; si no, nombre en texto. */
-export function WhereToBuy() {
+/* ---------------------------------------------------------------- Redes */
+
+export function Social() {
   return (
-    <Block id="donde-comprar" tone="bone" className="py-14 md:py-20">
-      <div className={container}>
-        <Reveal>
-          <p className="mb-10 text-center text-sm font-medium tracking-wide text-forest">
-            Dónde encontrarnos
-          </p>
-          <ul className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {allRetailers.map((r) => (
-              <li key={r.id}>
-                <RetailerLink
-                  retailer={r}
-                  location="donde_comprar"
-                  variant="plain"
-                  className="flex h-24 flex-col items-center justify-center gap-1 rounded-2xl border border-sand bg-cream px-4 text-center transition-[translate,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-gold hover:shadow-[0_16px_30px_-20px_rgb(200_132_58/0.8)]"
-                >
-                  {r.logo ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={r.logo} alt={r.name} className="max-h-10 w-auto" loading="lazy" />
-                  ) : (
-                    <>
-                      <span className="font-display text-lg leading-tight text-forest">{r.name}</span>
-                      <span className="text-[11px] text-charcoal/60">[PLACEHOLDER] logo</span>
-                    </>
-                  )}
-                </RetailerLink>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-      </div>
-    </Block>
+    <section aria-labelledby="redes" className="px-5 py-20 text-center md:py-24">
+      <Reveal>
+        <h2 id="redes" className="font-display text-5xl text-forest md:text-6xl">
+          <Words text={social.title} />
+        </h2>
+        <p className="mt-3 text-lg text-charcoal/75">{social.text}</p>
+        <ul className="mt-8 flex flex-wrap justify-center gap-3">
+          {contact.social.map((s) => (
+            <li key={s.label}>
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-12 items-center rounded-full bg-forest px-6 font-bold text-cream transition-[translate,background-color] duration-200 hover:-translate-y-0.5 hover:bg-sage-deep"
+              >
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Reveal>
+    </section>
   );
 }
 
-export function FinalCta() {
-  return (
-    <Block id="cta-final" tone="forest" className="grain py-24 md:py-32" data-final-cta>
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 -z-10 size-[80vmax] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--color-gold)_30%,transparent),transparent_60%)]"
-      />
-      <Reveal className="mx-auto flex max-w-2xl flex-col items-center px-5 text-center">
-        <h2 className="font-display text-5xl leading-tight md:text-7xl">
-          <Words text={finalCta.title} />
-        </h2>
-        <p className="mt-5 text-lg text-bone/80">{finalCta.text}</p>
-        <RetailerLink retailer={lider} location="cta_final" size="lg" className="mt-10 md:min-h-16 md:px-10 md:text-lg">
-          {finalCta.cta}
-        </RetailerLink>
-      </Reveal>
-    </Block>
-  );
-}
+/* ---------------------------------------------------------------- Footer */
 
 export function Footer() {
   return (
-    <footer className="mt-3 bg-charcoal pb-28 pt-16 text-bone md:mt-6 lg:pb-12">
-      <div className={`${container} grid gap-10 md:grid-cols-3`}>
+    <footer className="px-3 pb-24 md:px-6 md:pb-6" data-final-cta>
+      <div className="grain relative isolate grid gap-10 overflow-hidden rounded-[2rem] bg-forest px-6 py-14 text-cream md:rounded-[3rem] md:px-12 lg:grid-cols-[1.2fr_1fr] lg:px-16 lg:py-16">
         <div>
-          <p className="font-display text-2xl">Zen Organics</p>
-          <p className="mt-3 max-w-xs text-bone/70">Tofu orgánico hecho en Chile.</p>
+          <p className="font-display text-5xl leading-none md:text-7xl">Zen Organics</p>
+          <p className="mt-4 max-w-sm text-lg text-cream/80">{finalCta.text}</p>
+          <RetailerLink retailer={lider} location="footer" size="lg" className="mt-8">
+            {finalCta.cta}
+          </RetailerLink>
+
+          <nav aria-label="Pie de página" className="mt-12">
+            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-bold">
+              {nav.map((n) => (
+                <li key={n.href}>
+                  <a href={n.href} className="underline-offset-4 hover:underline">
+                    {n.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="mt-6 space-y-1 text-sm text-cream/75">
+            <p>{contact.email}</p>
+            <p>{contact.phone}</p>
+            <p className="pt-3 text-cream/60">© {new Date().getFullYear()} Zen Organics. Todos los derechos reservados.</p>
+          </div>
         </div>
-        <div>
-          <p className="mb-3 text-sm font-medium text-gold">Contacto</p>
-          <ul className="space-y-2 text-bone/80">
-            <li>{contact.email}</li>
-            <li>{contact.phone}</li>
-          </ul>
+
+        {/* Plato que asoma desde la esquina como cierre */}
+        <div aria-hidden className="relative hidden lg:block">
+          <ImageSlot
+            src={null}
+            alt=""
+            ratio="1/1"
+            label="Foto plato (PNG recortado)"
+            tone="warm"
+            sizes="40vw"
+            className="absolute -bottom-28 -right-20 w-[110%] rounded-full ring-8 ring-cream/10"
+          />
         </div>
-        <div>
-          <p className="mb-3 text-sm font-medium text-gold">Síguenos</p>
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
-            {contact.social.map((s) => (
-              <li key={s.label}>
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-bone/80 underline-offset-4 transition-colors hover:text-gold hover:underline"
-                >
-                  {s.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <div className={`${container} mt-12 border-t border-bone/15 pt-6 text-sm text-bone/60`}>
-        © {new Date().getFullYear()} Zen Organics. Todos los derechos reservados.
       </div>
     </footer>
   );
