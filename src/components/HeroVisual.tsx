@@ -50,14 +50,14 @@ export function HeroVisual() {
       {/* Poster mientras carga (y fallback si no hay WebGL) */}
       <div
         aria-hidden
-        className={`absolute inset-[8%] rounded-full bg-[radial-gradient(circle_at_40%_35%,var(--color-bone),var(--color-sand)_75%)] transition-opacity duration-700 ${
-          ready ? "opacity-40" : "opacity-100"
+        className={`absolute inset-[10%] rounded-full bg-[radial-gradient(circle_at_40%_35%,var(--color-bone),transparent_70%)] transition-opacity duration-700 ${
+          ready ? "opacity-60" : "opacity-100"
         }`}
       />
       {load && (
         <div
           aria-hidden
-          className={`absolute inset-0 transition-opacity duration-1000 ${ready ? "opacity-100" : "opacity-0"}`}
+          className={`absolute -inset-[6%] transition-opacity duration-1000 ${ready ? "opacity-100" : "opacity-0"}`}
         >
           <TofuScene active={inView} reducedMotion={reducedMotion} onReady={() => setReady(true)} />
         </div>

@@ -169,3 +169,5 @@ export const contact = {
     { label: "TikTok", href: PLACEHOLDER_URL },
   ],
 };
+
+export const marquee = ["Orgánico", "Proteína vegetal", "Hecho en Chile"];

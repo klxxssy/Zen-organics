@@ -13,7 +13,7 @@ export function OtherRetailersButton({ product, productName }: { product: string
       <button
         type="button"
         onClick={() => dialog.current?.showModal()}
-        className="inline-flex min-h-12 items-center justify-center rounded-full border border-charcoal px-6 text-[15px] font-medium transition-colors duration-200 hover:bg-charcoal hover:text-bone"
+        className="inline-flex min-h-12 cursor-pointer items-center justify-center rounded-full border border-charcoal px-6 text-[15px] font-semibold transition-colors duration-200 hover:bg-charcoal hover:text-bone"
       >
         Otros puntos de venta
       </button>
