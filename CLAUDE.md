@@ -2,16 +2,21 @@
 
 Landing de Zen Organics, marca chilena de tofu orgánico. **La web no vende directo**: su único objetivo es derivar a comprar en Líder y otros puntos de venta. Toda decisión de diseño y copy se evalúa por cuánto facilita ese click.
 
-Stack: Next.js (App Router) + Tailwind CSS. Estructura de página inspirada en tofoo.co.uk (rama `zen-tofoo`), con la identidad de Zen Organics.
+Stack: Next.js (App Router) + Tailwind CSS. Contenido en `src/content/zen.ts`, componentes en `src/components/zen/`.
 
-## Identidad de marca (obligatorio)
+## Identidad visual
 
-- **Estilo**: marca de comida premium y moderna, con vida, color y títulos con personalidad, sin perder la seriedad. Debe despertar apetito. Nada caricaturesco: sin emojis ni ilustraciones cartoon.
+- **Lenguaje visual de tofoo.co.uk, con los colores y la tipografía de Zen Organics**:
+  - hero y header del mismo color (`gold`);
+  - secciones de borde a borde con cortes en diagonal;
+  - bloques de color levemente inclinados (±1–1.5°) con el contenido recto;
+  - stickers girados, etiquetas tipo pestaña, botones negros con flecha y cuadraditos de navegación.
+- **No se copia** de Tofoo: textos, logos, fotos, ilustraciones ni su tipografía.
 - **Tono**: cercano pero profesional. Tuteo, frases claras, sin chistes ni juegos de palabras.
-- **Ritmo**: las secciones son **bloques de color con bordes redondeados** (radio 32–48px), separados del borde de la pantalla (12px en mobile, 24px en desktop) sobre el fondo `cream`. Alternan bloques claros (`bone`, `sage-tint`) y oscuros (`forest`). Mucho aire, máximo 1 idea por bloque.
-- **Personalidad (inspiración tofoo.co.uk, adaptada)**: títulos gruesos y redondeados, badges tipo sticker, bloques de color redondeados y tarjetas de receta con la comida sobre color sólido. **Nunca**: su tipografía, bloques inclinados, sus colores, textos o imágenes.
-- **Fotos**: grandes, protagonistas, luz natural y tonos cálidos de comida. Los placeholders de comida usan tonos cálidos (dorado/arena), nunca grises.
-- **Animación**: viva pero suave. Entradas escalonadas, fade + desplazamiento corto (400–700 ms, `ease-out`), hovers con elevación y zoom suave. Nada de rebotes ni parallax agresivo. Toda animación continua (como la franja) **se pausa fuera de pantalla** y se detiene con `prefers-reduced-motion`.
+- **Fotos**: grandes, con luz natural y tonos cálidos de comida. Los envases, idealmente en PNG recortado.
+- **Animación**:
+  - títulos que suben palabra por palabra, entradas al hacer scroll y hovers que elevan o enderezan;
+  - todo lo continuo (carrusel, filas en movimiento) tiene botón de pausa, se detiene fuera de pantalla y con `prefers-reduced-motion`.
 
 ### Paleta (tokens únicos, no usar otros colores)
 
@@ -46,56 +51,34 @@ En placeholders de comida se permiten tonos naturales de alimento (verde edamame
 - Cargar ambas con `next/font/google` (self-hosted, `display: swap`). Nada de `@import` de Google Fonts.
 - Clases: `font-display` para títulos y `font-sans` para el resto.
 - Cuerpo mínimo 16px, interlineado 1.6, líneas de 60–75 caracteres.
-- Los títulos grandes (h1/h2) entran palabra por palabra al hacer scroll (fade + subida corta, ~70 ms entre palabras). Con reducir movimiento se muestran completos y quietos.
+- Los títulos grandes entran palabra por palabra (`PopWords`). Con reducir movimiento se muestran completos y quietos.
 
 ## Reglas de contenido
 
 - **No inventar datos.** Cifras nutricionales, certificaciones, precios, links, dirección, teléfono, redes y nombres de puntos de venta distintos de Líder van como `[PLACEHOLDER]`.
 - Nunca afirmar "certificado orgánico" ni ningún sello sin tener el dato. Usa `[PLACEHOLDER: certificación]`.
-- Centralizar todo el copy y los links en `src/content/` para que se editen sin tocar componentes.
-
-## Referencia (tofoo.co.uk)
-
-Se usa **solo** como referencia de estructura y ritmo: orden de secciones, cómo presentan los beneficios, cómo resuelven dudas y cómo derivan a los supermercados.
-**Prohibido copiar** sus textos, colores, tipografías, ilustraciones, formas inclinadas o elementos de marca. Zen Organics debe verse como una marca distinta.
+- Todo el copy y los links van en `src/content/zen.ts`.
 
 ## Conversión y medición
 
 - Todo botón que lleva a Líder o a otro proveedor:
   - abre en pestaña nueva: `target="_blank" rel="noopener noreferrer"`;
   - dispara el evento `click_lider` con `{ retailer, location, product }` vía `window.dataLayer.push` (compatible con GTM → GA4 / Meta Pixel);
-  - pasa por un único componente `<RetailerLink>`. No crear links de compra ad hoc.
-- **"Comprar en Líder" es lo que más resalta en cada pantalla.** Va como botón sólido `gold` con texto `charcoal`, sombra cálida y flecha que se mueve en hover. Ningún otro elemento dorado puede tener más peso visual que el botón en la misma pantalla.
-- El CTA secundario "Otros puntos de venta" va en outline (`charcoal` en fondos claros, `bone` en fondos oscuros).
+  - pasa por un único componente `<BuyButton>`. No crear links de compra ad hoc.
+- El botón de compra es una píldora `charcoal` con texto `cream` en mayúsculas, flecha y sombra dura. Sobre fondos `forest` va en `cream`. Es el elemento con más contraste de cada pantalla.
 
-## Estructura de la página (inspirada en tofoo.co.uk)
+## Estructura de la página (`src/components/zen/`)
 
-1. Hero en carrusel (`HeroSlider`): bloque `forest`, título gigante, CTA de compra y envases sobre un círculo de color (`gold`, `sage` o `terracotta` según el slide). Autoplay con botón de pausa; se detiene con hover, foco, fuera de pantalla y reducir movimiento.
-2. Intro: título grande, kicker en mayúsculas pequeñas y párrafo de marca.
-3. Fila de stickers en movimiento (`MarqueeRow`).
-4. "Nos han destacado en": medios `[PLACEHOLDER]`.
-5. Aprende a prepararlo: bloque `gold` con 3 tarjetas `bone` (etiqueta tipo sticker y pasos desplegables).
-6. Nuestra línea: bloque `sage-tint` con filtros tipo chip y tarjetas de producto.
-7. Encuéntranos en: puntos de venta en movimiento.
-8. Recetas: bloque `forest` con carrusel (scroll nativo, flechas y puntos); la comida va sobre `gold`, `terracotta` o `sage`.
-9. Preguntas: bloque `terracotta` con preguntas en tarjetas `bone` (el texto `bone` sobre `terracotta` solo en el título grande).
-10. Síguenos: redes sociales.
-11. Footer: bloque `forest` con logo grande, CTA de compra, links y plato que asoma.
-
-## Header
-
-- Fondo `forest`; logo centrado en una cápsula `cream`, con 2 links a cada lado (escritorio) y el botón "Comprar en Líder" en `gold` a la derecha. En mobile: logo, botón y menú hamburguesa (el menú incluye todos los links).
-- **Arriba de todo** (sin scroll): ocupa todo el ancho, es alto (≈112px en desktop y 80px en mobile), con el logo grande, los links en letra grande y mucho espacio entre ellos.
-- **Al hacer scroll**: se achica con una transición suave (menos alto y logo más chico) y se convierte en una barra flotante con bordes redondeados, separada de los bordes de la pantalla y con sombra. Al volver arriba recupera su tamaño grande.
-- **Mobile**: el mismo comportamiento con menú hamburguesa; el menú desplegado también va en `forest`.
-- El hero reserva siempre la altura del header grande, así nunca tapa el título. Con reducir movimiento el cambio es instantáneo.
-- Hover de links: subrayado `gold` (el texto se mantiene en `cream`, porque `gold` sobre `forest` no da contraste para texto normal). El foco visible en el header va en `gold`.
-
-## Vida en la página
-
-- Tarjetas con entrada escalonada y títulos palabra por palabra.
-- Hover: las tarjetas se elevan y las fotos hacen zoom suave.
-- Toda fila en movimiento tiene botón de pausa, se pausa en hover y fuera de pantalla, y queda quieta con reducir movimiento.
+1. **`SiteHeader`**: fondo `gold`, links en mayúsculas a ambos lados y el logo en una burbuja `cream` al centro que sobresale, más el botón de compra con ícono. Se compacta al hacer scroll. En mobile: menú, logo y botón.
+2. **`HeroCarousel`**: `gold` a todo el ancho con corte diagonal abajo, título gigante, botón negro, envases girados a la derecha, cuadraditos de navegación y botón de pausa.
+3. **Intro, stickers y prensa**: intro, fila de stickers en movimiento (`Ticker`) y "Nos han destacado en" (`[PLACEHOLDER]`).
+4. **"Encuentra tu forma"**: bloque inclinado `forest` con 3 tarjetas (pestaña, foto sobre una mancha de color y pasos desplegables).
+5. **"Nuestra línea"**: bloque inclinado `sage-deep`, filtros tipo chip y tarjetas giradas.
+6. **Puntos de venta**: dos filas en movimiento.
+7. **Recetas**: `sage` a todo el ancho con cortes diagonales y carrusel con flechas cuadradas.
+8. **Banner "Ya lo puedes encontrar en Líder"**: bloque inclinado `forest`.
+9. **Preguntas**: bloque inclinado `terracotta`. El texto `bone` va solo en el título grande.
+10. **Redes y footer**: footer `gold` con corte diagonal arriba.
 
 ## Performance y mobile
 
