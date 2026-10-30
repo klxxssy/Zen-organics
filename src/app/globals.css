@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source not "../../agentes-ia-3d";
 
 @theme {
   --color-cream: #f5f1ea;

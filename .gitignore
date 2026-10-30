@@ -5,3 +5,6 @@ node_modules/
 .env*
 tsconfig.tsbuildinfo
 next-env.d.ts
+
+# Agentes IA 3D: las plantillas de entorno sí se versionan
+!agentes-ia-3d/**/.env.example
