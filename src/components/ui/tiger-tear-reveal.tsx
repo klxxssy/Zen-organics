@@ -396,7 +396,27 @@ function usePrefersReducedMotion() {
   return reduced
 }
 
-type Frame = { p: number; look: Pt; blink: number; squint: number }
+type Frame = {
+  p: number
+  look: Pt
+  blink: number
+  squint: number
+  /** 0→1 entrada del póster al cargar */
+  intro: number
+  /** pulso 0→1→0: el tigre "golpea" el papel desde atrás mientras esperas */
+  knock: number
+  /** temblor del golpe, en unidades del SVG */
+  knockShake: number
+  /** -1..1 respiración suave del póster en reposo */
+  breath: number
+}
+
+/** Rebote suave (menos exagerado que easeOutBack) para la subida del tigre. */
+function easeOutSoftBack(t: number) {
+  const c = 1.1
+  const u = clamp01(t) - 1
+  return 1 + (c + 1) * u * u * u + c * u * u
+}
 
 export default function TigerTearReveal({
   word = "COURAGE",
@@ -408,7 +428,7 @@ export default function TigerTearReveal({
   furColor = "#d9832c",
   fontFamily = '"Anton", Impact, "Bebas Neue", "Oswald", "Arial Narrow", "Arial Black", sans-serif',
   height = "100svh",
-  scrollDistance = "160svh",
+  scrollDistance = "200svh",
   progress,
   hint = true,
   className = "",
@@ -419,7 +439,7 @@ export default function TigerTearReveal({
   const id = "ttr" + React.useId().replace(/[^a-zA-Z0-9]/g, "")
   const fibres = React.useMemo(buildFibres, [])
   const line = React.useMemo(() => tearLine(), [])
-  const [f, setF] = React.useState<Frame>({ p: progress ?? 0, look: [0, 0], blink: 0, squint: 0 })
+  const [f, setF] = React.useState<Frame>({ p: progress ?? 0, look: [0, 0], blink: 0, squint: 0, intro: 0, knock: 0, knockShake: 0, breath: 0 })
 
   const controlled = progress !== undefined
   const cfg = React.useRef({ progress, controlled, reduced })
@@ -439,6 +459,8 @@ export default function TigerTearReveal({
     let nextIdle = 0
     let nextBlink = performance.now() + 2500
     let last: Frame | null = null
+    const t0 = performance.now()
+    let lastT = t0
 
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting
@@ -450,11 +472,36 @@ export default function TigerTearReveal({
       raf = 0
       if (!visible) return
       const c = cfg.current
+      const dt = Math.min(0.05, (now - lastT) / 1000)
+      lastT = now
       const target = c.controlled
         ? clamp01(c.progress ?? 0)
         : scrollProgress(root!.getBoundingClientRect().top, root!.offsetHeight, stage!.offsetHeight)
-      p = c.reduced ? (target > 0.3 ? 1 : 0) : p + (target - p) * 0.14
+      if (c.reduced) {
+        p = target > 0.3 ? 1 : 0
+      } else {
+        // Persigue al scroll con suavizado y velocidad máxima: aunque bajes rápido,
+        // la rotura se ve completa (~1.8 s) en vez de saltar directo a los ojos.
+        const diff = target - p
+        const maxStep = 0.55 * dt
+        p += Math.max(-maxStep, Math.min(maxStep, diff * 0.1 + Math.sign(diff) * 0.0015))
+      }
       if (Math.abs(target - p) < 0.0005) p = target
+
+      // Entrada del póster al cargar
+      const intro = c.reduced ? 1 : clamp01((now - t0) / 1400)
+      // En reposo (antes de hacer scroll): respira y cada ~5 s el tigre golpea desde atrás
+      const resting = !c.reduced && p < 0.015
+      const breath = resting ? Math.sin((now - t0) / 900) : 0
+      let knock = 0
+      let knockShake = 0
+      if (resting && now - t0 > 2400) {
+        const phase = ((now - t0 - 2400) % 5200) / 700
+        if (phase < 1) {
+          knock = Math.sin(Math.PI * phase)
+          knockShake = Math.sin(phase * 42) * 3.2 * knock
+        }
+      }
 
       // where the eyes look: the pointer if there is one, else a wandering gaze
       let want: Pt
@@ -483,9 +530,12 @@ export default function TigerTearReveal({
       }
       const squint = c.reduced ? 0 : Math.max(0, 1 - (now - squintAt.current) / 900)
 
-      const next: Frame = { p, look, blink, squint }
+      const next: Frame = { p, look, blink, squint, intro, knock, knockShake, breath }
       if (
         !last ||
+        Math.abs(next.intro - last.intro) > 1e-3 ||
+        Math.abs(next.knock - last.knock) > 1e-3 ||
+        Math.abs(next.breath - last.breath) > 2e-3 ||
         Math.abs(next.p - last.p) > 1e-4 ||
         Math.abs(next.look[0] - last.look[0]) > 1e-3 ||
         Math.abs(next.look[1] - last.look[1]) > 1e-3 ||
@@ -510,9 +560,18 @@ export default function TigerTearReveal({
   const pupil = 1.3 - 0.5 * s.pop + 0.35 * f.squint
   // the eyes are shut until the tiger is up, then they open
   const blink = Math.max(1 - clamp01(pop), f.blink, f.squint * 0.45)
-  const rise = (1 - s.rise) * 150
-  const shake = reduced ? 0 : Math.sin(f.p * 900) * 6 * s.shake
-  const crackReach = s.crack * 620
+  // Sube con un leve rebote, como si empujara el papel
+  const rise = (1 - easeOutSoftBack(s.rise)) * 150
+  const shake = reduced ? 0 : Math.sin(f.p * 900) * 6 * s.shake + f.knockShake
+  // En reposo la grieta asoma un poco con cada golpe y se vuelve a cerrar
+  const crackAmount = Math.max(s.crack, f.knock * 0.09)
+  const crackReach = crackAmount * 620
+  // Entrada: la frase baja y la palabra crece con rebote; luego respira
+  const tIn = smooth(0, 0.55, f.intro)
+  const wIn = smooth(0.15, 1, f.intro)
+  const wordScale = 0.86 + 0.14 * easeOutBack(wIn)
+  const wordTransform =
+    "translate(" + CX + " 330) rotate(" + (f.breath * 0.35).toFixed(3) + ") scale(" + (wordScale * (1 + f.breath * 0.006)).toFixed(4) + ") translate(" + -CX + " -330)"
   const crack = line.filter(([x]) => Math.abs(x - CX) <= crackReach)
   const tiger =
     "translate(" + CX + " " + (CY + rise).toFixed(2) + ") rotate(-7) scale(" + (1.34 - 0.06 * s.rise).toFixed(4) + ")"
@@ -526,6 +585,8 @@ export default function TigerTearReveal({
           y={150}
           textAnchor="middle"
           fill={taglineColor}
+          opacity={tIn}
+          transform={"translate(0 " + ((1 - tIn) * -24).toFixed(2) + ")"}
           style={{ font: '700 32px "Helvetica Neue", Helvetica, Arial, sans-serif', letterSpacing: "0.42em" }}
         >
           {tagline}
@@ -534,6 +595,8 @@ export default function TigerTearReveal({
       <text
         x={CX}
         y={404}
+        opacity={wIn}
+        transform={wordTransform}
         textAnchor="middle"
         textLength={880}
         lengthAdjust="spacingAndGlyphs"
@@ -650,7 +713,7 @@ export default function TigerTearReveal({
             )}
 
             {/* the crack, running out from the middle before it gives way */}
-            {s.crack > 0 && s.open < 0.15 && crack.length > 1 ? (
+            {crackAmount > 0 && s.open < 0.15 && crack.length > 1 ? (
               <path d={d(crack, false)} fill="none" stroke="#1d0f07" strokeWidth={2.4} strokeLinejoin="bevel" opacity={1 - s.open / 0.15} />
             ) : null}
           </g>
@@ -660,7 +723,7 @@ export default function TigerTearReveal({
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-6 flex flex-col items-center gap-2 font-mono text-[10px] uppercase tracking-[0.35em]"
-            style={{ color: taglineColor, opacity: Math.max(0, 0.7 - s.crack * 3) }}
+            style={{ color: taglineColor, opacity: Math.max(0, 0.7 - s.crack * 3) * smooth(0.5, 1, f.intro) }}
           >
             scroll
             <span className="block h-6 w-px animate-pulse motion-reduce:animate-none" style={{ background: taglineColor }} />
