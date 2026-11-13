@@ -16,3 +16,18 @@
 
 html { background: #2F4030; }
 body { background: var(--color-cream); color: var(--color-charcoal); font-family: var(--font-sans); }
+
+/* Aparición suave de las secciones de la landing al hacer scroll */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(40px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}

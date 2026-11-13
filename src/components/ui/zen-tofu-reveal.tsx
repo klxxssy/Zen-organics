@@ -317,7 +317,7 @@ export default function ZenTofuReveal({
   accent = "#C8843A",
   fontFamily = 'var(--font-lilita), "Arial Rounded MT Bold", system-ui, sans-serif',
   height = "100svh",
-  scrollDistance = "200svh",
+  scrollDistance = "260svh",
   hint = true,
   className = "",
 }: ZenTofuRevealProps) {
@@ -412,7 +412,12 @@ export default function ZenTofuReveal({
     }
   }, [])
 
-  const s = stages(f.p)
+  // 0 → 0.72: se raja, se rompe y sale el tofu. 0.72 → 1: las mitades salen volando
+  // y la cámara entra en el tofu hasta que todo queda color crema = arranca la landing.
+  const s = stages(Math.min(1, f.p / 0.72))
+  const exit = reduced ? 0 : smooth(0.72, 1, f.p)
+  const fade = reduced ? 0 : smooth(0.86, 1, f.p)
+  const spread = (portrait ? 2.2 : 1.35) + exit * exit * 9
   const pop = reduced ? s.pop : easeOutBack(s.pop)
   // El tofu sube con un leve rebote y, al quedar afuera, tiembla como tofu
   const rise = (1 - easeOutSoftBack(s.rise)) * 170
@@ -420,8 +425,10 @@ export default function ZenTofuReveal({
   const shake = reduced ? 0 : Math.sin(f.p * 900) * 6 * s.shake + f.knockShake
   const crackAmount = Math.max(s.crack, f.knock * 0.09)
   const crack = line.filter(([x]) => Math.abs(x - CX) <= crackAmount * 620)
+  const zoom = 1.3 * (1 + exit * exit * 2.2)
   const tofu =
-    "translate(" + CX + " " + (CY + rise).toFixed(2) + ") rotate(-7) scale(1.3 " + (1.3 * (1 + jiggle)).toFixed(4) + ")"
+    "translate(" + CX + " " + (CY + rise + exit * 60).toFixed(2) + ") rotate(" + (-7 * (1 - exit)).toFixed(3) + ") scale(" +
+    zoom.toFixed(4) + " " + (zoom * (1 + jiggle)).toFixed(4) + ")"
 
   // Entrada del envase: la línea baja, la marca crece con rebote; en reposo respira
   const tIn = smooth(0, 0.55, f.intro)
@@ -567,10 +574,10 @@ export default function ZenTofuReveal({
             {/* el envase: entero hasta que se rompe; después, dos mitades que se separan */}
             {s.open > 0 ? (
               <>
-                <Half id={id} side="top" line={line} open={s.open} spread={portrait ? 2.2 : 1.35}>
+                <Half id={id} side="top" line={line} open={s.open} spread={spread}>
                   {sheet}
                 </Half>
-                <Half id={id} side="bottom" line={line} open={s.open} spread={portrait ? 2.2 : 1.35}>
+                <Half id={id} side="bottom" line={line} open={s.open} spread={spread}>
                   {sheet}
                 </Half>
               </>
@@ -583,6 +590,8 @@ export default function ZenTofuReveal({
               <path d={d(crack, false)} fill="none" stroke="#0F1A10" strokeWidth={2.6} strokeLinejoin="bevel" opacity={1 - s.open / 0.15} />
             ) : null}
           </g>
+          {/* fundido final al color de la landing */}
+          {fade > 0 ? <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill="#F5F1EA" opacity={fade} /> : null}
         </svg>
 
         {hint ? (

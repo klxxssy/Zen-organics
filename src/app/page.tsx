@@ -6,7 +6,7 @@ export default function Page() {
       <ZenTofuReveal />
 
       {/* Landing provisoria: el contenido real llega cuando Felipe mande objetivos e info */}
-      <section className="bg-cream px-4 py-24 text-center">
+      <section className="reveal bg-cream px-4 py-24 text-center">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold">Tofu orgánico · Hecho en Chile</p>
         <h1 className="mx-auto mt-4 max-w-2xl font-display text-5xl leading-[1.05] text-forest md:text-7xl">
           Tofu de verdad, hecho con calma.
