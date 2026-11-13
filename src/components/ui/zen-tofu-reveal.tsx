@@ -271,6 +271,17 @@ const SPARKLES: [number, number, number][] = [
   [-470, 90, 0.8],
 ]
 
+/** Pliegues de la bolsa al vacío (coordenadas del envase). */
+const CREASES = [
+  "M-40 120 C 80 90 160 160 250 110",
+  "M760 80 C 820 140 880 120 1000 170",
+  "M-20 420 C 60 380 140 470 240 430",
+  "M770 400 C 830 360 900 450 1040 410",
+  "M120 40 C 160 90 140 160 210 200",
+  "M820 260 C 860 300 840 360 900 380",
+  "M60 250 C 100 270 90 330 140 350",
+]
+
 // ---------------------------------------------------------------- componente
 
 function usePrefersReducedMotion() {
@@ -309,12 +320,12 @@ type Frame = { p: number; shine: number; intro: number; knock: number; knockShak
 
 export default function ZenTofuReveal({
   brand = "Zen Organics",
-  tagline = "TOFU ORGÁNICO · HECHO EN CHILE",
-  detail = "Tofu firme · [PLACEHOLDER] g",
-  sticker = ["Proteína", "vegetal"],
-  packColor = "#2F4030",
-  ink = "#F5F1EA",
-  accent = "#C8843A",
+  tagline = "tofu",
+  detail = "Un alimento para la vida",
+  sticker = ["300g", "Ingredientes: Proteína de soya, agua y cloruro de calcio"],
+  packColor = "#E2DACB",
+  ink = "#3E7D2B",
+  accent = "#6CB33F",
   fontFamily = 'var(--font-lilita), "Arial Rounded MT Bold", system-ui, sans-serif',
   height = "100svh",
   scrollDistance = "260svh",
@@ -430,67 +441,92 @@ export default function ZenTofuReveal({
     "translate(" + CX + " " + (CY + rise + exit * 60).toFixed(2) + ") rotate(" + (-7 * (1 - exit)).toFixed(3) + ") scale(" +
     zoom.toFixed(4) + " " + (zoom * (1 + jiggle)).toFixed(4) + ")"
 
-  // Entrada del envase: la línea baja, la marca crece con rebote; en reposo respira
+  // Entrada del envase: la etiqueta aparece con rebote; en reposo respira
   const tIn = smooth(0, 0.55, f.intro)
   const wIn = smooth(0.15, 1, f.intro)
-  const brandScale = (0.86 + 0.14 * easeOutBack(wIn)) * (1 + f.breath * 0.006)
-  const brandTransform =
-    "translate(" + CX + " 290) rotate(" + (f.breath * 0.35).toFixed(3) + ") scale(" + brandScale.toFixed(4) + ") translate(" + -CX + " -290)"
+  const labelScale = (portrait ? 1.75 : 1) * (0.9 + 0.1 * easeOutBack(wIn)) * (1 + f.breath * 0.006)
+  const labelTransform =
+    "translate(" + CX + " " + (portrait ? 300 : 268) + ") rotate(" + (f.breath * 0.35).toFixed(3) + ") scale(" + labelScale.toFixed(4) + ")"
 
-  // El envase: provisorio, dibujado con los colores de Zen Organics
+  // El envase real: bolsa al vacío transparente (se ve el tofu borroso) + etiqueta blanca
   const sheet = (
     <>
+      {/* el tofu visto a través del plástico: apagado y lechoso */}
       <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill={packColor} />
-      {/* reflejo del plástico del envase */}
-      <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill={`url(#${id}-gloss)`} />
-      <g opacity={tIn} transform={"translate(0 " + ((portrait ? -170 : 0) + (1 - tIn) * -24).toFixed(2) + ")"}>
-        <path d="M120 96 H880" stroke={accent} strokeWidth={3} />
-        <text x={CX} y={138} textAnchor="middle" fill={accent} style={{ font: '700 26px "DM Sans", system-ui, sans-serif', letterSpacing: "0.32em" }}>
-          {tagline}
-        </text>
+      <g transform={"translate(" + CX + " -150) scale(1.6)"}>
+        <Tofu id={id} />
       </g>
-      {portrait ? (
-        <g opacity={wIn} transform={brandTransform}>
-          {/* en celular: "Zen" arriba de la rotura y "Organics" abajo */}
-          <text x={CX} y={262} textAnchor="middle" textLength={520} lengthAdjust="spacingAndGlyphs" fill={ink} style={{ fontFamily, fontSize: 300 }}>
-            {brand.split(" ")[0]}
+      {/* velo lechoso del plástico */}
+      <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill="#F7F5F0" opacity={0.52} />
+      <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill={`url(#${id}-gloss)`} />
+      {/* pliegues del vacío */}
+      <g fill="none" strokeLinecap="round" filter={`url(#${id}-soft)`}>
+        {CREASES.map((c, i) => (
+          <path key={i} d={c} stroke="#FFFFFF" strokeWidth={10} opacity={0.55} />
+        ))}
+      </g>
+      <g fill="none" strokeLinecap="round">
+        {CREASES.map((c, i) => (
+          <path key={i} d={c} stroke="#B9AE98" strokeWidth={1.4} opacity={0.35} transform="translate(0 7)" />
+        ))}
+      </g>
+
+      {/* etiqueta */}
+      <g opacity={tIn} transform={labelTransform}>
+        <rect x={-206} y={-236} width={412} height={472} rx={6} fill="#000" opacity={0.08} transform="translate(3 5)" />
+        <rect x={-206} y={-236} width={412} height={472} rx={6} fill="#FFFFFF" />
+        <g opacity={wIn}>
+          <text x={0} y={-92} textAnchor="middle" fill={accent} style={{ font: '800 150px "DM Sans", system-ui, sans-serif', letterSpacing: "-0.05em" }}>
+            {tagline}
           </text>
-          <text x={CX} y={560} textAnchor="middle" textLength={780} lengthAdjust="spacingAndGlyphs" fill={ink} style={{ fontFamily, fontSize: 230 }}>
-            {brand.split(" ").slice(1).join(" ") || brand}
+          <text x={0} y={-44} textAnchor="middle" fill={accent} style={{ font: 'italic 500 27px "DM Sans", system-ui, sans-serif' }}>
+            {detail}
           </text>
-        </g>
-      ) : (
-        <text
-          x={CX}
-          y={350}
-          opacity={wIn}
-          transform={brandTransform}
-          textAnchor="middle"
-          textLength={800}
-          lengthAdjust="spacingAndGlyphs"
-          fill={ink}
-          style={{ fontFamily, fontSize: 190, letterSpacing: 0 }}
-        >
-          {brand}
-        </text>
-      )}
-      <g opacity={tIn} transform={portrait ? "translate(0 230)" : undefined}>
-        <text x={CX} y={448} textAnchor="middle" fill={ink} opacity={0.85} style={{ font: '600 26px "DM Sans", system-ui, sans-serif', letterSpacing: "0.08em" }}>
-          {detail}
-        </text>
-        <path d="M120 482 H880" stroke={accent} strokeWidth={3} />
-        {/* sticker */}
-        <g transform={"translate(" + (portrait ? "790 -130" : "842 196") + ") rotate(-12) scale(" + (portrait ? 1.35 : 1) + ") scale(" + (0.6 + 0.4 * easeOutBack(smooth(0.4, 1, f.intro))).toFixed(3) + ")"}>
-          <circle r={62} fill={accent} />
-          <circle r={54} fill="none" stroke={ink} strokeWidth={2} strokeDasharray="4 5" opacity={0.7} />
-          <text y={-4} textAnchor="middle" fill="#2B2B2B" style={{ font: '800 19px "DM Sans", system-ui, sans-serif' }}>
-            {sticker[0]}
+          <text x={0} y={-18} textAnchor="middle" fill="#6B6B6B" style={{ font: 'italic 600 14px "DM Sans", system-ui, sans-serif' }}>
+            No transgénico
           </text>
-          <text y={20} textAnchor="middle" fill="#2B2B2B" style={{ font: '800 19px "DM Sans", system-ui, sans-serif' }}>
+          {/* logo */}
+          <text x={0} y={100} textAnchor="middle" style={{ fontFamily, fontSize: 54 }}>
+            <tspan fill={accent}>{brand.split(" ")[0]}</tspan>
+            <tspan fill={ink}> {brand.split(" ").slice(1).join(" ")}</tspan>
+          </text>
+          {/* tabla nutricional */}
+          <text x={-130} y={124} fill="#555" style={{ font: '700 11px "DM Sans", system-ui, sans-serif' }}>
+            Tabla Nutricional
+          </text>
+          {Array.from({ length: 6 }, (_, i) => (
+            <g key={i} transform={"translate(0 " + (136 + i * 9) + ")"}>
+              <path d="M-130 0 H120" stroke="#CFCFCF" strokeWidth={0.8} />
+              <rect x={-130} y={-6} width={40 + ((i * 37) % 50)} height={3} fill="#A8A8A8" />
+              <rect x={60} y={-6} width={18} height={3} fill="#A8A8A8" />
+              <rect x={96} y={-6} width={18} height={3} fill="#A8A8A8" />
+            </g>
+          ))}
+          {/* código de barras */}
+          <g transform="translate(-188 186) rotate(-90)">
+            {Array.from({ length: 26 }, (_, i) => (
+              <rect key={i} x={i * 3.2} y={0} width={i % 3 === 0 ? 2 : 1} height={22} fill="#222" />
+            ))}
+          </g>
+          {/* web vertical y gramaje */}
+          <text transform="translate(-186 70) rotate(-90)" textAnchor="middle" fill={accent} style={{ font: '700 13px "DM Sans", system-ui, sans-serif' }}>
+            www.zenorganics.cl
+          </text>
+          <g transform="translate(184 92)">
+            <rect x={-13} y={-34} width={26} height={68} fill={accent} />
+            <text transform="rotate(-90)" y={6} textAnchor="middle" fill="#FFF" style={{ font: '800 16px "DM Sans", system-ui, sans-serif' }}>
+              {sticker[0]}
+            </text>
+          </g>
+          {/* franja verde de ingredientes */}
+          <path d="M-206 196 H206 V230 a6 6 0 0 1 -6 6 H-200 a6 6 0 0 1 -6 -6Z" fill={accent} />
+          <text x={0} y={221} textAnchor="middle" fill="#FFF" style={{ font: 'italic 600 13.5px "DM Sans", system-ui, sans-serif' }}>
             {sticker[1]}
           </text>
         </g>
       </g>
+      {/* brillo del plástico encima de todo */}
+      <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill={`url(#${id}-gloss)`} opacity={0.6} />
     </>
   )
 
@@ -530,11 +566,11 @@ export default function ZenTofuReveal({
               <stop offset="1" stopColor="#FFFFFF" stopOpacity={0} />
             </radialGradient>
             <linearGradient id={id + "-gloss"} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0.25" stopColor="#FFFFFF" stopOpacity={0} />
-              <stop offset="0.4" stopColor="#FFFFFF" stopOpacity={0.07} />
-              <stop offset="0.48" stopColor="#FFFFFF" stopOpacity={0} />
-              <stop offset="0.58" stopColor="#FFFFFF" stopOpacity={0.05} />
-              <stop offset="0.64" stopColor="#FFFFFF" stopOpacity={0} />
+              <stop offset="0.3" stopColor="#FFFFFF" stopOpacity={0.12} />
+              <stop offset="0.42" stopColor="#FFFFFF" stopOpacity={0.4} />
+              <stop offset="0.47" stopColor="#FFFFFF" stopOpacity={0.12} />
+              <stop offset="0.56" stopColor="#FFFFFF" stopOpacity={0.3} />
+              <stop offset="0.62" stopColor="#FFFFFF" stopOpacity={0.1} />
             </linearGradient>
             <linearGradient id={id + "-curl-top"} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stopColor="#ffffff" />
@@ -587,7 +623,7 @@ export default function ZenTofuReveal({
 
             {/* la grieta que asoma antes de romperse */}
             {crackAmount > 0 && s.open < 0.15 && crack.length > 1 ? (
-              <path d={d(crack, false)} fill="none" stroke="#0F1A10" strokeWidth={2.6} strokeLinejoin="bevel" opacity={1 - s.open / 0.15} />
+              <path d={d(crack, false)} fill="none" stroke="#6B5D45" strokeWidth={2.6} strokeLinejoin="bevel" opacity={1 - s.open / 0.15} />
             ) : null}
           </g>
           {/* fundido final al color de la landing */}

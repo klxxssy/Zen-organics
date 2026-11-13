@@ -14,7 +14,7 @@
   --font-sans: var(--font-dm-sans), system-ui, sans-serif;
 }
 
-html { background: #2F4030; }
+html { background: #E2DACB; }
 body { background: var(--color-cream); color: var(--color-charcoal); font-family: var(--font-sans); }
 
 /* Aparición suave de las secciones de la landing al hacer scroll */
