@@ -191,7 +191,7 @@ function Half({
           d={d(line, false)}
           fill="none"
           stroke="#000"
-          strokeOpacity={0.32 * Math.min(1, open * 3)}
+          strokeOpacity={0.14 * Math.min(1, open * 3)}
           strokeWidth={22}
           transform={"translate(0 " + (up ? 10 : -10) + ")"}
           filter={"url(#" + id + "-soft)"}
@@ -203,9 +203,9 @@ function Half({
       <g clipPath={"url(#" + clip + ")"}>{children}</g>
       {open > 0 ? (
         <>
-          <path d={d(core)} fill="#ffffff" />
+          <path d={d(core)} fill="#ffffff" opacity={0.8} />
           {curls.map((c, i) => (
-            <path key={i} d={c} fill={"url(#" + id + "-curl-" + side + ")"} stroke="#fff" strokeWidth={1} />
+            <path key={i} d={c} fill={"url(#" + id + "-curl-" + side + ")"} stroke="#fff" strokeWidth={1} opacity={0.85} />
           ))}
         </>
       ) : null}
@@ -215,61 +215,108 @@ function Half({
 
 // ---------------------------------------------------------------- el tofu
 
-/** Poros del tofu: puntitos más oscuros, siempre iguales (semilla fija). */
-function buildPores() {
-  const r = rng(91)
-  let dots = ""
-  for (let i = 0; i < 900; i++) {
-    const x = (r() - 0.5) * 2600
-    const y = -48 + r() * 420
-    const rx = 1.2 + r() * 3.4
-    const ry = 0.8 + r() * 2.2
-    // elipse como dos arcos (un solo path liviano)
-    dots += "M" + (x - rx).toFixed(1) + " " + y.toFixed(1) + "a" + rx.toFixed(1) + " " + ry.toFixed(1) + " 0 1 0 " + (rx * 2).toFixed(1) + " 0a" + rx.toFixed(1) + " " + ry.toFixed(1) + " 0 1 0 " + (-rx * 2).toFixed(1) + " 0"
+/**
+ * Textura del tofu (crema mate con poros, como tofu firme de verdad).
+ * Se dibuja UNA vez en un canvas y se usa como imagen: queda nítida y no
+ * cuesta nada animarla.
+ */
+const TEX = 2048
+function makeTofuTexture(): Promise<string> {
+  const c = document.createElement("canvas")
+  c.width = c.height = TEX
+  const g = c.getContext("2d")
+  if (!g) return Promise.resolve("")
+  const r = rng(7)
+  g.fillStyle = "#EEE5D1"
+  g.fillRect(0, 0, TEX, TEX)
+
+  // manchas suaves: el tofu no es de un color parejo
+  for (let i = 0; i < 280; i++) {
+    const x = r() * TEX, y = r() * TEX, rad = 60 + r() * 240
+    const col = r() < 0.55 ? "250,246,236" : "220,205,176"
+    const gr = g.createRadialGradient(x, y, 0, x, y, rad)
+    gr.addColorStop(0, `rgba(${col},${(0.18 + r() * 0.2).toFixed(2)})`)
+    gr.addColorStop(1, `rgba(${col},0)`)
+    g.fillStyle = gr
+    g.fillRect(x - rad, y - rad, rad * 2, rad * 2)
   }
-  return dots
+
+  // grano fino
+  const img = g.getImageData(0, 0, TEX, TEX)
+  const px = img.data
+  for (let i = 0; i < px.length; i += 4) {
+    const n = (r() - 0.5) * 9
+    px[i] += n
+    px[i + 1] += n
+    px[i + 2] += n * 0.9
+  }
+  g.putImageData(img, 0, 0)
+
+  // puntitos
+  for (let i = 0; i < 5200; i++) {
+    g.fillStyle = `rgba(188,168,132,${(0.2 + r() * 0.3).toFixed(2)})`
+    g.beginPath()
+    g.ellipse(r() * TEX, r() * TEX, 0.6 + r() * 0.9, 0.5 + r() * 0.7, r() * 3, 0, Math.PI * 2)
+    g.fill()
+  }
+
+  // poros: hoyitos con sombra adentro y borde de luz abajo
+  const pit = (x: number, y: number, rx: number, ry: number, rot: number) => {
+    g.fillStyle = "rgba(255,252,243,0.32)"
+    g.beginPath()
+    g.ellipse(x + 0.5, y + ry * 0.5 + 0.6, rx * 0.9, ry * 0.8, rot, 0, Math.PI * 2)
+    g.fill()
+    const gr = g.createRadialGradient(x, y - ry * 0.35, 0, x, y, Math.max(rx, ry) * 1.1)
+    gr.addColorStop(0, "rgba(138,112,76,0.8)")
+    gr.addColorStop(0.6, "rgba(184,162,124,0.6)")
+    gr.addColorStop(1, "rgba(214,198,166,0.1)")
+    g.fillStyle = gr
+    g.beginPath()
+    g.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2)
+    g.fill()
+  }
+  for (let i = 0; i < 3200; i++) {
+    const x = r() * TEX, y = r() * TEX
+    const big = r() < 0.045
+    const rx = big ? 4 + r() * 6 : 1.1 + r() * 3
+    const ry = rx * (0.4 + r() * 0.5)
+    const rot = (r() - 0.5) * 1.2
+    pit(x, y, rx, ry, rot)
+    // los poros grandes son irregulares: dos o tres hoyitos juntos
+    if (big) pit(x + (r() - 0.5) * rx * 1.4, y + (r() - 0.5) * ry, rx * (0.5 + r() * 0.4), ry * (0.6 + r() * 0.4), rot)
+  }
+
+  return new Promise((res) => c.toBlob((b) => res(b ? URL.createObjectURL(b) : ""), "image/jpeg", 0.92))
 }
 
-/** Brillos de humedad sobre la superficie. */
-const GLINTS: [number, number, number, number][] = [
-  [-420, 40, 70, 10],
-  [-170, 120, 46, 8],
-  [90, 20, 90, 12],
-  [330, 140, 60, 9],
-  [560, 60, 80, 11],
-  [-640, 160, 54, 8],
-]
+function useTofuTexture() {
+  const [tex, setTex] = React.useState<string | null>(null)
+  React.useEffect(() => {
+    let url = ""
+    let alive = true
+    makeTofuTexture().then((u) => {
+      url = u
+      if (alive) setTex(u || null)
+    })
+    return () => {
+      alive = false
+      if (url) URL.revokeObjectURL(url)
+    }
+  }, [])
+  return tex
+}
 
-const Tofu = React.memo(function Tofu({ id }: { id: string }) {
-  const pores = React.useMemo(buildPores, [])
+/** El bloque de tofu, ocupando toda la pantalla detrás del plástico. */
+const TofuLayer = React.memo(function TofuLayer({ id, tex }: { id: string; tex: string | null }) {
   return (
     <g>
-      {/* cara de arriba del bloque (se ve el borde al subir) */}
-      <rect x={-2600} y={-160} width={5200} height={102} fill={`url(#${id}-tofu-top)`} />
-      {/* cara frontal */}
-      <rect x={-2600} y={-60} width={5200} height={700} fill={`url(#${id}-tofu-front)`} />
-      <path d={pores} fill="#B8A383" opacity={0.32} />
-      {/* arista redondeada con brillo */}
-      <path d="M-2600 -60 H2600" stroke="#FFFDF7" strokeWidth={7} opacity={0.9} />
-      <path d="M-2600 -52 H2600" stroke="#D9C9AC" strokeWidth={4} opacity={0.6} />
-      <g filter={`url(#${id}-soft)`} fill="#FFFFFF">
-        {GLINTS.map(([x, y, rx, ry], i) => (
-          <ellipse key={i} cx={x} cy={y} rx={rx} ry={ry} opacity={0.35} />
-        ))}
-      </g>
+      <rect x={-700} y={-900} width={2400} height={2600} fill="#EEE5D1" />
+      {tex ? <image href={tex} x={-100} y={-300} width={1200} height={1200} preserveAspectRatio="none" /> : null}
+      {/* luz suave de arriba a la izquierda: volumen, sin brillos */}
+      <rect x={-700} y={-900} width={2400} height={2600} fill={`url(#${id}-tofu-shade)`} />
     </g>
   )
 })
-
-/** Destello dorado (estrella de 4 puntas) que aparece cuando el tofu ya está afuera. */
-const sparkle = "M0 -14 C2 -3 3 -2 14 0 C3 2 2 3 0 14 C-2 3 -3 2 -14 0 C-3 -2 -2 -3 0 -14Z"
-const SPARKLES: [number, number, number][] = [
-  [-300, 30, 1.3],
-  [-60, 70, 0.9],
-  [210, 20, 1.5],
-  [420, 80, 1],
-  [-470, 90, 0.8],
-]
 
 /** Pliegues de la bolsa al vacío (coordenadas del envase). */
 const CREASES = [
@@ -336,6 +383,7 @@ export default function ZenTofuReveal({
   const stageRef = React.useRef<HTMLDivElement | null>(null)
   const reduced = usePrefersReducedMotion()
   const portrait = usePortrait()
+  const tex = useTofuTexture()
   const id = "ztr" + React.useId().replace(/[^a-zA-Z0-9]/g, "")
   const line = React.useMemo(() => tearLine(), [])
   const [f, setF] = React.useState<Frame>({ p: 0, shine: 0, intro: 0, knock: 0, knockShake: 0, breath: 0 })
@@ -429,17 +477,14 @@ export default function ZenTofuReveal({
   const exit = reduced ? 0 : smooth(0.72, 1, f.p)
   const fade = reduced ? 0 : smooth(0.86, 1, f.p)
   const spread = (portrait ? 2.2 : 1.35) + exit * exit * 9
-  const pop = reduced ? s.pop : easeOutBack(s.pop)
-  // El tofu sube con un leve rebote y, al quedar afuera, tiembla como tofu
-  const rise = (1 - easeOutSoftBack(s.rise)) * 170
-  const jiggle = reduced ? 0 : Math.sin(s.pop * Math.PI * 5) * (1 - s.pop) * 0.07 * Math.min(1, s.pop * 6)
+  // El tofu queda quieto: solo se rompe el plástico. Al soltarse el vacío tiembla apenas.
+  const jiggle = reduced ? 0 : Math.sin(s.open * Math.PI * 4) * (1 - s.open) * 0.012 * Math.min(1, s.open * 5)
   const shake = reduced ? 0 : Math.sin(f.p * 900) * 6 * s.shake + f.knockShake
   const crackAmount = Math.max(s.crack, f.knock * 0.09)
   const crack = line.filter(([x]) => Math.abs(x - CX) <= crackAmount * 620)
-  const zoom = 1.3 * (1 + exit * exit * 2.2)
+  const zoom = (portrait ? 2.2 : 1.2) * (1 + exit * exit * 1.6)
   const tofu =
-    "translate(" + CX + " " + (CY + rise + exit * 60).toFixed(2) + ") rotate(" + (-7 * (1 - exit)).toFixed(3) + ") scale(" +
-    zoom.toFixed(4) + " " + (zoom * (1 + jiggle)).toFixed(4) + ")"
+    "translate(" + CX + " " + CY + ") scale(" + zoom.toFixed(4) + " " + (zoom * (1 + jiggle)).toFixed(4) + ") translate(" + -CX + " " + -CY + ")"
 
   // Entrada del envase: la etiqueta aparece con rebote; en reposo respira
   const tIn = smooth(0, 0.55, f.intro)
@@ -451,13 +496,8 @@ export default function ZenTofuReveal({
   // El envase real: bolsa al vacío transparente (se ve el tofu borroso) + etiqueta blanca
   const sheet = (
     <>
-      {/* el tofu visto a través del plástico: apagado y lechoso */}
-      <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill={packColor} />
-      <g transform={"translate(" + CX + " -150) scale(1.6)"}>
-        <Tofu id={id} />
-      </g>
-      {/* velo lechoso del plástico */}
-      <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill="#F7F5F0" opacity={0.52} />
+      {/* plástico transparente: deja ver la textura del tofu, apenas lechoso */}
+      <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill="#FBFAF7" opacity={0.26} />
       <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill={`url(#${id}-gloss)`} />
       {/* pliegues del vacío */}
       <g fill="none" strokeLinecap="round" filter={`url(#${id}-soft)`}>
@@ -467,7 +507,7 @@ export default function ZenTofuReveal({
       </g>
       <g fill="none" strokeLinecap="round">
         {CREASES.map((c, i) => (
-          <path key={i} d={c} stroke="#B9AE98" strokeWidth={1.4} opacity={0.35} transform="translate(0 7)" />
+          <path key={i} d={c} stroke="#B9AE98" strokeWidth={1.2} opacity={0.15} transform="translate(0 7)" />
         ))}
       </g>
 
@@ -525,8 +565,7 @@ export default function ZenTofuReveal({
           </text>
         </g>
       </g>
-      {/* brillo del plástico encima de todo */}
-      <rect x={-FAR} y={-FAR} width={FAR * 2 + VIEW_W} height={FAR * 2} fill={`url(#${id}-gloss)`} opacity={0.6} />
+
     </>
   )
 
@@ -561,16 +600,17 @@ export default function ZenTofuReveal({
               <stop offset="0" stopColor="#E9DDC6" />
               <stop offset="1" stopColor="#FBF6EC" />
             </linearGradient>
-            <radialGradient id={id + "-shine"}>
-              <stop offset="0" stopColor="#FFFFFF" stopOpacity={0.55} />
-              <stop offset="1" stopColor="#FFFFFF" stopOpacity={0} />
-            </radialGradient>
-            <linearGradient id={id + "-gloss"} x1="0" y1="0" x2="1" y2="1">
+            <linearGradient id={id + "-tofu-shade"} x1="0" y1="0" x2="1" y2="1">
               <stop offset="0.3" stopColor="#FFFFFF" stopOpacity={0.12} />
-              <stop offset="0.42" stopColor="#FFFFFF" stopOpacity={0.4} />
-              <stop offset="0.47" stopColor="#FFFFFF" stopOpacity={0.12} />
-              <stop offset="0.56" stopColor="#FFFFFF" stopOpacity={0.3} />
-              <stop offset="0.62" stopColor="#FFFFFF" stopOpacity={0.1} />
+              <stop offset="0.5" stopColor="#FFFFFF" stopOpacity={0} />
+              <stop offset="0.7" stopColor="#8C7350" stopOpacity={0.1} />
+            </linearGradient>
+            <linearGradient id={id + "-gloss"} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0.3" stopColor="#FFFFFF" stopOpacity={0.05} />
+              <stop offset="0.42" stopColor="#FFFFFF" stopOpacity={0.28} />
+              <stop offset="0.47" stopColor="#FFFFFF" stopOpacity={0.05} />
+              <stop offset="0.56" stopColor="#FFFFFF" stopOpacity={0.2} />
+              <stop offset="0.62" stopColor="#FFFFFF" stopOpacity={0.04} />
             </linearGradient>
             <linearGradient id={id + "-curl-top"} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stopColor="#ffffff" />
@@ -586,26 +626,10 @@ export default function ZenTofuReveal({
           </defs>
 
           <g transform={"translate(" + shake.toFixed(2) + " " + (shake * 0.4).toFixed(2) + ")"}>
-            {/* detrás del envase: el tofu, que sube por la rotura */}
-            {s.open > 0 ? (
-              <g transform={tofu}>
-                <Tofu id={id} />
-                {/* brillo que sigue al puntero */}
-                <ellipse cx={f.shine * 420} cy={40} rx={260} ry={60} fill={`url(#${id}-shine)`} />
-                {SPARKLES.map(([x, y, k], i) => {
-                  const a = smooth(0.1 + i * 0.12, 0.5 + i * 0.1, s.pop)
-                  return a > 0 ? (
-                    <path
-                      key={i}
-                      d={sparkle}
-                      fill="#E3A65C"
-                      opacity={a * (1 - 0.4 * smooth(0.8, 1, s.pop))}
-                      transform={"translate(" + x + " " + y + ") scale(" + (k * easeOutBack(a)).toFixed(3) + ")"}
-                    />
-                  ) : null
-                })}
-              </g>
-            ) : null}
+            {/* el tofu, siempre ahí: el plástico lo cubre y al romperse queda a la vista */}
+            <g transform={tofu}>
+              <TofuLayer id={id} tex={tex} />
+            </g>
 
             {/* el envase: entero hasta que se rompe; después, dos mitades que se separan */}
             {s.open > 0 ? (
